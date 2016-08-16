@@ -1,3 +1,5 @@
+package trainingTest;
+
 /**
  * Created by Ежище on 04.05.2016.
  */

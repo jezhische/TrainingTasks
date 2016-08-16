@@ -1,4 +1,4 @@
-
+package trainingTest;
 
 /**
  * Created by Ежище on 09.07.2016.

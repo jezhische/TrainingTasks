@@ -1,13 +1,13 @@
 package trainingTest.utilityTest;
 
-//import cars.Vehicle;
+//import cars.trainingTest.Vehicle;
 //import supportedClasses.Printer;
 
 /**
  * Created by Ежище on 09.07.2016.
  */
 public class SorterWithList {
-//    public static void sortVehicles(List<Vehicle> list) {
+//    public static void sortVehicles(List<trainingTest.Vehicle> list) {
 //        /** сортировка результатов гонки: */
 //        for (int k = list.size(); k >= 0; k--) {
 //            for (int j = 0; j < k - 1; j++) {
@@ -17,7 +17,7 @@ public class SorterWithList {
 //            }
 //        }
 //
-//        for (Vehicle vehicle : list) {
+//        for (trainingTest.Vehicle vehicle : list) {
 //            System.out.println(Printer.printData(vehicle));
 //        }
 //    }

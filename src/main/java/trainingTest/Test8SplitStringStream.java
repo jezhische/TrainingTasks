@@ -26,7 +26,7 @@ public class Test8SplitStringStream {
 
 //
 //        MashkaCar mashkaCar = new MashkaCar("neMashka", 1,15,0.1);
-//        Vehicle unsortedCarList[] = {mashkaCar.goVehicle()};
+//        trainingTest.Vehicle unsortedCarList[] = {mashkaCar.goVehicle()};
 //        Sorter sorter = new Sorter();
 //        sorter.sortVehicles(unsortedCarList);
     }

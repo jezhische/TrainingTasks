@@ -26,7 +26,7 @@ public class Tes6SplitStringIntoStringArray {
         String inputString = "Просто, строка в,     java";
 
         String[] splitResult = inputString.split(pat_tern);
-        System.out.println("Регулярное выражение: " + Arrays.toString(splitResult));
+        System.out.println("Регулярное выражение: " + Arrays.deepToString(splitResult));
 
 
     }
