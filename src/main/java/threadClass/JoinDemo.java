@@ -5,7 +5,7 @@ package threadClass;
  * http://darkraha.com/rus/java/api/multithread/join.php
  */
 public class JoinDemo {
-    // задача для потоков: просто засыпаем на 4 мс count раз
+
     public static class MyRunnable implements Runnable {
         private int count;
 
@@ -13,6 +13,7 @@ public class JoinDemo {
             this.count = count;
         }
 
+        // задача для потоков: просто засыпаем на 4 мс count раз
         @Override
         public void run() {
             try {
@@ -39,6 +40,7 @@ public class JoinDemo {
         int count;
         Thread pool[] = new Thread[10];
 
+        // запускаем потоки:
         try {
             for (int i = 9; i >= 0; --i) {
                 count = 100 + 100 * i;
@@ -48,7 +50,7 @@ public class JoinDemo {
                 pool[i].start();
             }
 
-            // for (int i = 0; i <10 ; ++i) {
+            // только теперь присоединяемся к запущенным потокам и ждем их завершения
             for (int i = 9; i >= 0; --i) {
                 pool[i].join();
             }
@@ -74,7 +76,7 @@ public class JoinDemo {
                 count = 100 + 100 * i;
                 t = new Thread(new MyRunnable(count), "test1_task" + count);
                 t.start();
-                t.join();
+//                t.join();
             }
         } catch (Exception e) {
             e.printStackTrace();
