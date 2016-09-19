@@ -9,10 +9,11 @@ import java.util.concurrent.Future;
 
 /**
  * Created by Ежище on 16.09.2016.
+ * http://darkraha.com/rus/java/api/multithread/task.php
+ * https://blogs.oracle.com/CoreJavaTechTips/entry/get_netbeans_6
  */
 public class CallableExample {
-    public static class WordLengthCallable
-            implements Callable<Integer> {
+    public static class WordLengthCallable implements Callable<Integer> {
         private String word;
         public WordLengthCallable(String word) {
             this.word = word;
@@ -27,7 +28,9 @@ public class CallableExample {
 
         Set<Future<Integer>> set = new HashSet<Future<Integer> >();
 
-        for (String word: args) {
+        String [] words = {"мама мыла раму"};
+
+        for (String word: words) { // здесь вместо String words были args из main
             Callable<Integer> callable = new WordLengthCallable(word);
             Future<Integer> future = pool.submit(callable);
             set.add(future);
