@@ -3,9 +3,9 @@ package threadClass;
 /**
  * Created by WORK on 25.08.2016.
  */
-public class MyThread implements Runnable {
+public class MyThreadRunnable implements Runnable {
 
-    MyThread(){
+    MyThreadRunnable(){
     }
 
     public void run(){
@@ -22,7 +22,7 @@ public class MyThread implements Runnable {
     public static void main(String[] args) {
 
         System.out.println("Главный поток начал работу...");
-        new Thread(new MyThread(),"MyThread").start();
+        new Thread(new MyThreadRunnable(),"MyThreadRunnable").start();
         System.out.println("Главный поток завершил работу...");
     }
 }
