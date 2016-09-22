@@ -1,7 +1,6 @@
 package swing;
 
 import javax.swing.*;
-import java.awt.event.KeyListener;
 
 /**
  * Created by WORK on 15.09.2016.
@@ -19,14 +18,36 @@ public class HelloWorld implements Runnable {
         //
         // Запускаем весь код, работающий с интерфейсом, в управляющем потоке, даже инициализацию:
 
-        SwingUtilities.invokeLater (new HelloWorld());
+        SwingUtilities.invokeLater(new HelloWorld());
+        // из java-документации по методу invokeLater:
+        Runnable doHelloWorld = new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Hello World on " + Thread.currentThread());
+            }
+        };
+
+        SwingUtilities.invokeLater(doHelloWorld);
+        System.out.println("This might well be displayed before the other message.");
     }
-@Override
+
+    @Override
     public void run() {
+        // вначале event dispatching thread поспит 5 сек, потом появится окно, и только еще через 5 сек выполнится
+        // SwingUtilities.invokeLater(doHelloWorld); - поскольку invokeLater выполняется после завершения других задач в потоке
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         // Создаем окно с заголовком "Hello, World!"
 
-        JFrame f = new JFrame ("Hello, World!");
+        JFrame f = new JFrame("Hello, World!");
 
         // Ранее практиковалось следующее: создавался listener и регистрировался
         // на экземпляре главного окна, который реагировал на windowClosing()
@@ -35,7 +56,8 @@ public class HelloWorld implements Runnable {
         // Данный способ уничтожает текущее окно, но не останавливает приложение. Тем
         // самым приложение будет работать пока не будут закрыты все окна.
 
-        f.setDefaultCloseOperation (JFrame.DISPOSE_ON_CLOSE);
+        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
 
         // однако можно задать и так:
         //            f.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
@@ -53,5 +75,11 @@ public class HelloWorld implements Runnable {
         // Показать окно
 
         f.setVisible(true);
+
+        JFrame e = new JFrame("kkk");
+        e.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        e.add(new JLabel("ddddddddddddddddddddddddddddddddddd \n iiiiiiiiiiii"));
+        e.setVisible(true);
+        e.pack();
     }
 }
