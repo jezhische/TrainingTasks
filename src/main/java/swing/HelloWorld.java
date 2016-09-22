@@ -18,12 +18,12 @@ public class HelloWorld implements Runnable {
         //
         // Запускаем весь код, работающий с интерфейсом, в управляющем потоке, даже инициализацию:
 
-        SwingUtilities.invokeLater(new HelloWorld());
+
         // из java-документации по методу invokeLater:
         Runnable doHelloWorld = new Runnable() {
             public void run() {
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(10000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -33,6 +33,8 @@ public class HelloWorld implements Runnable {
 
         SwingUtilities.invokeLater(doHelloWorld);
         System.out.println("This might well be displayed before the other message.");
+
+        SwingUtilities.invokeLater(new HelloWorld());
     }
 
     @Override
@@ -64,7 +66,7 @@ public class HelloWorld implements Runnable {
 
         // Добавляем на панель окна нередактируемый компонент с текстом.
 
-        //f.getContentPane().add (new JLabel("Hello, World!")); - старый стиль
+//        f.getContentPane().add (new JLabel("Hello, World!")); // - старый стиль
         f.add(new JLabel("Hello World"));
 
         // pack() "упаковывает" окно до оптимального размера, рассчитанного на основании размеров
@@ -77,7 +79,7 @@ public class HelloWorld implements Runnable {
         f.setVisible(true);
 
         JFrame e = new JFrame("kkk");
-        e.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        e.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         e.add(new JLabel("ddddddddddddddddddddddddddddddddddd \n iiiiiiiiiiii"));
         e.setVisible(true);
         e.pack();

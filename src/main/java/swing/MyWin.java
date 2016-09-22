@@ -37,10 +37,13 @@ public class MyWin extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack(); // устанавливаем желательные размеры
         setVisible(true); // отображаем окно
+        System.out.println(Thread.currentThread().getName());
     }
 
     // запуск оконного приложения
     public static void main(String args[]) {
+        System.out.println(Thread.currentThread().getName());
+
         new MyWin();
     }
 }
