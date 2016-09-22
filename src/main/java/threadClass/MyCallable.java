@@ -24,7 +24,7 @@ public class MyCallable implements Callable<String> {
 
     public static void main(String args[]){
         //Получаем ExecutorService утилитного класса Executors с размером gпула потоков равному 10
-        ExecutorService executor = Executors.newFixedThreadPool(10);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
         //создаем список с Future, которые ассоциированы с Callable
         List<Future<String>> list = new ArrayList<Future<String>>();
         // создаем экземпляр MyCallable
