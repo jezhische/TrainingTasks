@@ -16,7 +16,7 @@ public class WinConstructorProbe extends JFrame implements ActionListener {
         textArea.setLineWrap(true);
         textArea.setToolTipText("something like text editor");
 
-        Container c = getContentPane();
+//        Container c = getContentPane();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
         add(new JScrollPane(textArea));
