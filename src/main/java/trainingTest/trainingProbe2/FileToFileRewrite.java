@@ -1,4 +1,4 @@
-package trainingProbe2;
+package trainingTest.trainingProbe2;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
