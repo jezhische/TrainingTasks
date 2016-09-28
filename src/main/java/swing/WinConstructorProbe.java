@@ -16,18 +16,31 @@ public class WinConstructorProbe extends JFrame implements ActionListener {
         textArea.setLineWrap(true);
         textArea.setToolTipText("something like text editor");
 
-        Container c = getContentPane();
+//        Container c = getContentPane();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new BorderLayout());
+//        setLayout(new BorderLayout());
         add(new JScrollPane(textArea));
 
         JPanel panel = new JPanel();
+        panel.setLayout(new FlowLayout());
         JButton button = new JButton("Clear pane");
         button.addActionListener(this);
         panel.add(button);
+        panel.add(new JButton("Anonimous"), new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getActionCommand().equals("Anonimous"))
+                textArea.setText("anonymous turns into a lambda");
+            }
+        });
+        panel.add(new JButton("something very long"));
 
         add(panel, BorderLayout.SOUTH);
         setSize(new Dimension(300, 400));
+//        setContentPane(panel);
+        getContentPane().add(new JButton("what?"), BorderLayout.WEST);
+        getContentPane().add(new JButton("that!"), BorderLayout.NORTH);
+
 
 
 
@@ -40,7 +53,7 @@ public class WinConstructorProbe extends JFrame implements ActionListener {
     }
 
     public static void main(String[] args) {
-        new WinConstructorProbe().setVisible(true);
+//        new WinConstructorProbe().setVisible(true);
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override

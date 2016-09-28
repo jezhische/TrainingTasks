@@ -1,3 +1,5 @@
+package trainingTest;
+
 /**
  * Created by WORK on 15.09.2016.
  */
