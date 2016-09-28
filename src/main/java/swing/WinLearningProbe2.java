@@ -25,11 +25,15 @@ public class WinLearningProbe2 implements ActionListener {
 
         JButton e = new JButton("E");
         pan1.add(e, BorderLayout.EAST);
+        e.setMaximumSize(new Dimension(25, 35));
+//        e.setPreferredSize(new Dimension(25, 35));
         e.addActionListener(this);
 
         JButton w = new JButton("W");
         pan1.add(w, BorderLayout.WEST);
         w.addActionListener(this);
+
+//        window.pack();
 
     }
 
