@@ -1,10 +1,8 @@
-package swing;
+package swing.windows;
 
 import javax.swing.*;
 
 import java.awt.*;
-
-import static com.sun.glass.ui.Cursor.setVisible;
 
 /**
  * Created by WORK on 15.09.2016.

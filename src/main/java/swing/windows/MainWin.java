@@ -1,18 +1,10 @@
-package swing;
+package swing.windows;
 
 // пример оконного приложения
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 /**
  * Created by WORK on 22.09.2016.
@@ -36,14 +28,11 @@ public class MainWin extends JFrame implements ActionListener {
         // две кнопки в дополнительную панель
         JPanel jp = new JPanel();
         JButton jbt = new JButton("Add text");
-
-        ActionListener act = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("text!");
-            }
-        };
-        jbt.addActionListener(act); // назначаем обработчик события
+        jbt.addActionListener(this); // назначаем в обработчики события образец класса - то есть то, что получается при
+        // имплементации интерфейса, см. внизу
+        jbt.addActionListener(e -> System.out.println("text!")); // создаем другой обработчик события, не образец класса.
+        // e - потому что в супер-методе интерфейса в аргументах (ActionEvent e).
+        // И назначаем этот обработчик события дополнительно на ту же кнопку
         jp.add(jbt);
         jbt = new JButton("Clear text");
         jbt.addActionListener(this); // назначаем обработчик события
@@ -69,6 +58,7 @@ public class MainWin extends JFrame implements ActionListener {
     }
 
     // обработчик события, метод интерфейса ActionListener
+    @Override
     public void actionPerformed(ActionEvent arg0) {
         if (arg0.getActionCommand().equals("Add text"))
             jta.append(" Add text\\n");

@@ -1,4 +1,4 @@
-package swing;
+package swing.windows;
 
 import javax.swing.*;
 
