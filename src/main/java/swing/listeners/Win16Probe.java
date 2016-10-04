@@ -5,16 +5,18 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 /**
  * Created by WORK on 03.10.2016.
  */
 public class Win16Probe extends JFrame implements ActionListener {
-
+JButton button2;
     Win16Probe() {
         super();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 600);
+        setSize(500, 400);
 ////        Box horiz = Box.createHorizontalBox();
 //        setLayout(new FlowLayout());
 //        JPanel panel1 = new JPanel();
@@ -53,10 +55,30 @@ public class Win16Probe extends JFrame implements ActionListener {
         button1.addActionListener(this);
         panel1.add(button1, BorderLayout.WEST);
 
-        button1 = new JButton("3");
-        button1.setBorder(new CompoundBorder(new EmptyBorder(12, 20, 12, 20), new LineBorder(Color.BLUE, 3)));
-        button1.addActionListener(this);
-        panel1.add(button1);
+        button2 = new JButton("3");
+        button2.setBorder(new CompoundBorder(new EmptyBorder(12, 20, 12, 20), new LineBorder(Color.BLUE, 3)));
+        button2.addActionListener(this);
+        button2.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                System.out.println((int)e.getKeyChar());
+                if ((int)e.getKeyChar() == 27) {
+                    if(JOptionPane.showConfirmDialog(button2, "Щас ты все закроешь! Точно уверен?") == JOptionPane.YES_OPTION)
+                        System.exit(0);
+                }
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
+        panel1.add(button2);
 
         panel1.setBorder(new BevelBorder(BevelBorder.RAISED, Color.green, Color.CYAN));
 
@@ -67,11 +89,12 @@ public class Win16Probe extends JFrame implements ActionListener {
         add(panel1, BorderLayout.WEST);
 
 
-        pack();
+//        pack();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        System.out.println("Есть контакт");
 
         if (e.getActionCommand().equals("1"))
             dispose();
