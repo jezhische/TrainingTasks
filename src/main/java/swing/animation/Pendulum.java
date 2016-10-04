@@ -1,4 +1,4 @@
-package swing;
+package swing.animation;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
