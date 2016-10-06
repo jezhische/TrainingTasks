@@ -72,7 +72,11 @@ public class FrameCreator extends JFrame {
             g2d.setColor(Color.BLACK);
             g2d.drawRect(60, 20, 120, 120);
             g2d.setColor(Color.ORANGE);
+<<<<<<< HEAD
             g2d.fillRect(x/2 + 150, 40, 80, y / 2);
+=======
+            g2d.fillRect(x/2 + 150, y / 2, 80, 40);
+>>>>>>> 1ad39ed8d5d5037ab2658ab9c443d7828058e296
             g2d.setColor(Color.RED);
             g2d.drawRect(x, y, 120, 60);
 //            x++;
