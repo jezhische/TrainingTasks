@@ -1,7 +1,5 @@
 package swing._2D;
 
-import com.sun.java.swing.plaf.motif.MotifBorders;
-
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
@@ -15,23 +13,30 @@ import java.awt.*;
 public class FrameCreator extends JFrame {
     FrameCreator() {
         super();
-        setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(1000, 1000));
+//        setLayout(new BorderLayout());
+        setLayout(null);
+        setPreferredSize(new Dimension(1000, 800));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JButton start = new JButton("Start");
+        start.setPreferredSize(new Dimension(70, 50));
+        start.setLocation(700, 0);
+        add(start);
+
+
+        setLayout(new BorderLayout());
         Graph1Rectangle rect = new Graph1Rectangle();
         rect.setPreferredSize(new Dimension(700, 900));
         TitledBorder titledBorder = new TitledBorder("Добавленный компонент Graph1Rectangle");
         CompoundBorder compoundBorder = new CompoundBorder(new LineBorder(Color.BLUE, 3), titledBorder);
         rect.setBorder(compoundBorder);
-        add(rect, BorderLayout.SOUTH);
+        add(rect, BorderLayout.NORTH);
         pack();
         this.setLocationRelativeTo(null);
-
     }
-    public void pulse() {
 
-    }
+
     private int x, y;
+
     private JFrame createFrame(int x, int y) {
         this.x = x;
         this.y = y;
@@ -52,8 +57,9 @@ public class FrameCreator extends JFrame {
                 y++;
                 repaint();
                 try {
-                    Thread.sleep(5);
-                } catch (InterruptedException ex) {}
+                    Thread.sleep(10);
+                } catch (InterruptedException ex) {
+                }
             }
         }
 
@@ -72,9 +78,17 @@ public class FrameCreator extends JFrame {
             g2d.setColor(Color.BLACK);
             g2d.drawRect(60, 20, 120, 120);
             g2d.setColor(Color.ORANGE);
-            g2d.fillRect(x/2 + 150, 40, 80, y / 2);
+            g2d.fillRect(x / 2 + 150, 40, 80, y / 2);
             g2d.setColor(Color.RED);
             g2d.drawRect(x, y, 120, 60);
+            g2d.setColor(Color.RED);
+            g2d.fillRect(0, 160, 20 + 2 * x, 40);
+            g2d.setColor(Color.green);
+            g2d.fillRect(0, 150, 120 + x, 60);
+            g2d.setColor(Color.BLUE);
+            g2d.fillRect(500, 300, 120 - 2 * x, 60 - y / 8);
+            g2d.setColor(Color.MAGENTA);
+            g2d.fillRect(500, 600, 80 - x / 12, 5 - y / 4);
 //            x++;
 //            y++;
 //            g2d.drawLine(150, 0, x, y);
