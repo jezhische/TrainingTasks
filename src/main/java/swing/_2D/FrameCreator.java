@@ -2,28 +2,38 @@ package swing._2D;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Created by Ежище on 06.10.2016.
  */
 
 public class FrameCreator extends JFrame {
+
+    private int x, y;
+    private boolean isStarted = false;
+    private int delay;
+    private Timer timer;
+
+
     FrameCreator() {
-        super();
-//        setLayout(new BorderLayout());
-        setLayout(null);
+        super("Прямоугольнички");
+        setLayout(new BorderLayout());
         setPreferredSize(new Dimension(1000, 800));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JButton start = new JButton("Start");
-        start.setPreferredSize(new Dimension(70, 50));
-        start.setLocation(700, 0);
-        add(start);
 
+        Box startBox = Box.createHorizontalBox();
+//        JButton start = new JButton("Start");
+//        start.setPreferredSize(new Dimension(70, 400));
+////        start.setBorder(new EmptyBorder(10, 50, 500, 10));
+        startBox.add(createStartButton());
+        add(startBox, BorderLayout.SOUTH);
 
-        setLayout(new BorderLayout());
         Graph1Rectangle rect = new Graph1Rectangle();
         rect.setPreferredSize(new Dimension(700, 900));
         TitledBorder titledBorder = new TitledBorder("Добавленный компонент Graph1Rectangle");
@@ -34,17 +44,34 @@ public class FrameCreator extends JFrame {
         this.setLocationRelativeTo(null);
     }
 
-
-    private int x, y;
-
     private JFrame createFrame(int x, int y) {
         this.x = x;
         this.y = y;
         return this;
     }
+    private JButton createStartButton(){
+        JButton startButton = new JButton("Start");
+        startButton.setPreferredSize(new Dimension(70, 400));
+        startButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getActionCommand().equals("Start")) {
+                    isStarted = true;
+                    startButton.setText("Pause");
+//                    startButton.setActionCommand("Pause");
+                } else {
+                    isStarted = false;
+                    startButton.setText("Start");
+                }
+            }
+//            timer = new Timer(delay, this);
+        });
+
+        return startButton;
+    }
 
     private class Graph1Rectangle extends JComponent implements Runnable {
-
         public Graph1Rectangle() {
             super();
             new Thread(this).start();
@@ -55,7 +82,11 @@ public class FrameCreator extends JFrame {
             for (int i = 0; i < 750; i++) {
                 x++;
                 y++;
-                repaint();
+                if (isStarted) {
+                    repaint();
+                }
+                else
+                    Thread.yield();
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException ex) {
@@ -68,9 +99,13 @@ public class FrameCreator extends JFrame {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g;
 
-            g2d.clearRect(0, 0, 700, 300);
-//            this.setOpaque(true);
+            Rectangle r=getBounds();
             g2d.setBackground(Color.white);
+            g2d.clearRect(0, 0, r.width, r.height);
+
+//            g2d.clearRect(0, 0, 700, 300);
+//            this.setOpaque(false);
+//            g2d.setBackground(Color.white);
             g2d.drawRect(0, 0, 700, 300);
 
             g2d.setColor(Color.cyan);
@@ -88,7 +123,7 @@ public class FrameCreator extends JFrame {
             g2d.setColor(Color.BLUE);
             g2d.fillRect(500, 300, 120 - 2 * x, 60 - y / 8);
             g2d.setColor(Color.MAGENTA);
-            g2d.fillRect(500, 600, 80 - x / 12, 5 - y / 4);
+            g2d.fillRect(500, 600, 80 - x / 12,  - y / 4);
 //            x++;
 //            y++;
 //            g2d.drawLine(150, 0, x, y);
