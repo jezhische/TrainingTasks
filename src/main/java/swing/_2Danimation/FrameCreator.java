@@ -1,8 +1,7 @@
-package swing._2D;
+package swing._2Danimation;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
@@ -28,9 +27,6 @@ public class FrameCreator extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         Box startBox = Box.createHorizontalBox();
-//        JButton start = new JButton("Start");
-//        start.setPreferredSize(new Dimension(70, 400));
-////        start.setBorder(new EmptyBorder(10, 50, 500, 10));
         startBox.add(createStartButton());
         add(startBox, BorderLayout.SOUTH);
 
@@ -43,6 +39,7 @@ public class FrameCreator extends JFrame {
         pack();
         this.setLocationRelativeTo(null);
     }
+
 
     private JFrame createFrame(int x, int y) {
         this.x = x;
@@ -69,6 +66,54 @@ public class FrameCreator extends JFrame {
         });
 
         return startButton;
+    }
+
+    private class Graph2Rectangle extends JComponent {
+
+////        Timer timer;
+//        private Timer createTimer(int delay) {
+//            return new Timer(delay, new ActionListener() {
+//                @Override
+//                public void actionPerformed(ActionEvent e) {
+//                    repaint();
+//                }
+//            });
+//        }
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+
+            Rectangle r=getBounds();
+            g2d.setBackground(Color.white);
+            g2d.clearRect(0, 0, r.width, r.height);
+
+//            g2d.clearRect(0, 0, 700, 300);
+//            this.setOpaque(false);
+//            g2d.setBackground(Color.white);
+            g2d.drawRect(0, 0, 700, 300);
+
+            g2d.setColor(Color.cyan);
+            g2d.fillRect(60, 20, 120, 120);
+            g2d.setColor(Color.BLACK);
+            g2d.drawRect(60, 20, 120, 120);
+            g2d.setColor(Color.ORANGE);
+            g2d.fillRect(x / 2 + 150, 40, 80, y / 2);
+            g2d.setColor(Color.RED);
+            g2d.drawRect(x, y, 120, 60);
+            g2d.setColor(Color.RED);
+            g2d.fillRect(0, 160, 20 + 2 * x, 40);
+            g2d.setColor(Color.green);
+            g2d.fillRect(0, 150, 120 + x, 60);
+            g2d.setColor(Color.BLUE);
+            g2d.fillRect(500, 300, 120 - 2 * x, 60 - y / 8);
+            g2d.setColor(Color.MAGENTA);
+            g2d.fillRect(500, 600, 80 - x / 12,  - y / 4);
+//            x++;
+//            y++;
+//            g2d.drawLine(150, 0, x, y);
+//            g2d.drawOval(x - 20, y - 20, 40, 40);
+        }
     }
 
     private class Graph1Rectangle extends JComponent implements Runnable {
@@ -141,7 +186,7 @@ public class FrameCreator extends JFrame {
             @Override
             public void run() {
                 FrameCreator frameCreator = new FrameCreator();
-                frameCreator.createFrame(50, 50);
+//                frameCreator.createFrame(50, 50);
                 frameCreator.setVisible(true);
 //                for (int i = 0; i < 1000; i++) {
 ////                    frameCreator.repaint();
