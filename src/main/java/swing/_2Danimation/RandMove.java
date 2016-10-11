@@ -3,6 +3,9 @@ package swing._2Danimation;
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +20,8 @@ public class RandMove extends JFrame implements ActionListener {
     private Timer timer;
     private JButton start;
     private JButton reset;
+    private JSlider rectNumberSlider;
+    private JSlider delaySlider;
     private RandRect randRects;
     private int frameWidth;
     private int frameHeight;
@@ -24,11 +29,34 @@ public class RandMove extends JFrame implements ActionListener {
 //    private ArrayList<Integer> randomList;
     private int rX;
     private int count;
-//    int delay;
+    private int delay;
 
-    RandMove(int delay, int count) {
-//        this.delay = delay;
-        this.count = count;
+    RandMove() {
+
+        rectNumberSlider = new JSlider(JSlider.HORIZONTAL, 10, 300, 70);
+        rectNumberSlider.setMajorTickSpacing(20);
+        rectNumberSlider.setMinorTickSpacing(5);
+        rectNumberSlider.setPaintTicks(true);
+        rectNumberSlider.setPaintLabels(true);
+        rectNumberSlider.setSnapToTicks(true);
+        rectNumberSlider.setBorder(new TitledBorder("number of items to be sorted (press \"Reset\" after setting)"));
+
+        delaySlider = new JSlider(JSlider.HORIZONTAL, 1, 500, 50);
+        delaySlider.setMajorTickSpacing(20);
+        delaySlider.setMinorTickSpacing(5);
+        delaySlider.setPaintTicks(true);
+        delaySlider.setPaintLabels(true);
+        delaySlider.setSnapToTicks(true);
+        delaySlider.setBorder(new TitledBorder("delay"));
+        delaySlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                timer.setDelay(delaySlider.getValue());
+            }
+        });
+
+        delay = delaySlider.getValue();
+        count = rectNumberSlider.getValue();
         frameWidth = 1300;
         frameHeight = 700;
         yShift = 300;
@@ -55,6 +83,8 @@ public class RandMove extends JFrame implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+//                delay = delaySlider.getValue();
+//                timer.restart();
                 randRects.repaint();
             }
         });
@@ -66,6 +96,10 @@ public class RandMove extends JFrame implements ActionListener {
         reset.addActionListener(this);
         buttons.add(start);
         buttons.add(reset);
+
+
+        buttons.add(rectNumberSlider);
+        buttons.add(delaySlider);
 
         add(visualization, BorderLayout.CENTER);
         add(buttons, BorderLayout.SOUTH);
@@ -105,23 +139,21 @@ public class RandMove extends JFrame implements ActionListener {
                 g2d.drawRect(rX, yShift, rWidth, rHeight - 4);
                 g2d.setColor(Color.YELLOW);
                 g2d.fillRect(rX + 1, yShift - 1, rWidth - 2, rHeight - 1);
+                g2d.setColor(Color.black);
+
+                int fontSize = (int)(rWidth / 1.5);
+                Font f = new Font("Dialog", Font.BOLD, fontSize);
+                g2d.setFont(f);
+                FontMetrics fontMetrics = g2d.getFontMetrics();
+                int stringX_Coordinate = rX + rWidth / 2 - fontMetrics.stringWidth(String.valueOf(randomList.get(i))) / 2;
+                int stringY_Coordinate = yShift + (int)(fontMetrics.getHeight() + 1.5);
+                g2d.drawString(String.valueOf(randomList.get(i)), stringX_Coordinate, stringY_Coordinate);
 
             }
         }
     }
 
-//    private ArrayList<Integer> getRandomList(int count) {
-//        this.count = count;
-//        ArrayList<Integer> randomList = new ArrayList<>(count);
-//        for (int i = 0; i < count; i++) {
-//            randomList.add(i);
-//        }
-//        Collections.shuffle(randomList);
-////        for (Integer i: randomList)
-////            System.out.print(i + "  ");
-//        return randomList;
-//    }
-
+//    rectNumberSlider.getValueIsAdjusting()
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Start")) {
@@ -133,15 +165,14 @@ public class RandMove extends JFrame implements ActionListener {
         } else if (e.getActionCommand().equals("Reset")) {
             timer.stop();
             rX = 0;
+            count = rectNumberSlider.getValue();
             start.setText("Start");
             randRects.repaint();
         }
-
-
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new RandMove(10, 150).setVisible(true));
+        SwingUtilities.invokeLater(() -> new RandMove().setVisible(true));
 //        getRandomList(20);
     }
 }
