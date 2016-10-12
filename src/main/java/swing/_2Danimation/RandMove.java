@@ -1,5 +1,7 @@
 package swing._2Danimation;
 
+import swing._2Danimation.auxiliary.BubbleSort;
+
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -124,13 +126,14 @@ public class RandMove extends JFrame implements ActionListener {
             g2d.setBackground(Color.RED);
 //            Rectangle r = getBounds();
 //            g2d.clearRect(0, 0, r.width, r.height);
-            g2d.clearRect(0, 0, (frameWidth - 1) + 5, frameHeight);
+            g2d.clearRect(0, 0, frameWidth, frameHeight);
 
 
             int rHeight, rWidth, coefficient;
             rWidth = (int) ((frameWidth - 1) / count);
             coefficient = (int) ((yShift) / count);
 //            System.out.println(coefficient);
+//            ArrayList<Integer> randomList = BubbleSort.sort(getRandomList(count));
             ArrayList<Integer> randomList = getRandomList(count);
             for (int i = 0; i < count; i++) {
                 rHeight = -(randomList.get(i) * coefficient);
@@ -145,9 +148,9 @@ public class RandMove extends JFrame implements ActionListener {
                 Font f = new Font("Dialog", Font.BOLD, fontSize);
                 g2d.setFont(f);
                 FontMetrics fontMetrics = g2d.getFontMetrics();
-                int stringX_Coordinate = rX + rWidth / 2 - fontMetrics.stringWidth(String.valueOf(randomList.get(i))) / 2;
-                int stringY_Coordinate = yShift + (int)(fontMetrics.getHeight() + 1.5);
-                g2d.drawString(String.valueOf(randomList.get(i)), stringX_Coordinate, stringY_Coordinate);
+                int stringXCoordinate = rX + rWidth / 2 - fontMetrics.stringWidth(String.valueOf(randomList.get(i))) / 2;
+                int stringYCoordinate = yShift + (int)(fontMetrics.getHeight() + 1.5);
+                g2d.drawString(String.valueOf(randomList.get(i)), stringXCoordinate, stringYCoordinate);
 
             }
         }
