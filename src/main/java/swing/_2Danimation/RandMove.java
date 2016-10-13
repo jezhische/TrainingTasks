@@ -66,7 +66,7 @@ public class RandMove extends JFrame implements ActionListener {
         setSize(frameWidth, frameHeight);
         setLayout(new BorderLayout());
         Box visualization = Box.createHorizontalBox();
-        visualization.setBorder(new LineBorder(Color.red, 4));
+//        visualization.setBorder(new LineBorder(Color.red, 4));
 
         randRects = new RandRect();
         randRects.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
@@ -123,7 +123,7 @@ public class RandMove extends JFrame implements ActionListener {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g;
 
-            g2d.setBackground(Color.RED);
+            g2d.setBackground(Color.PINK);
 //            Rectangle r = getBounds();
 //            g2d.clearRect(0, 0, r.width, r.height);
             g2d.clearRect(0, 0, frameWidth, frameHeight);
