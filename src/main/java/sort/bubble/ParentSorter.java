@@ -15,4 +15,5 @@ public abstract class ParentSorter {
     public int transit = 0;
 //    public int count;
     public ArrayList<Integer> sort(ArrayList<Integer> randomList){return randomList;}
+    public int[] sort(int[] arr) {return arr;}
 }
