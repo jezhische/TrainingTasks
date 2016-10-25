@@ -1,5 +1,6 @@
-package trainingTest;
+package listSubList;
 
+import sort.bubble.BubbleSortFull;
 import swing._2Danimation.auxiliary.BubbleSort;
 
 import java.util.ArrayList;
@@ -33,7 +34,16 @@ public class SubArrayList {
 
         List<Integer> lll = BubbleSort.sort(list.subList(0, count / 2)); // NB: это перегруженный метод sort для List<>, а не для ArrayList<>
         System.out.print("\nList<>!!! lll =   " + lll);
+        System.out.print("\nlist =   " + list); // и вот половина исходного листа уже отсортирована!
+
+
+        List<Integer> listlist = (List<Integer>) list;
+        System.out.print("\nlistlist =   " + listlist);
+        list = (ArrayList<Integer>) listlist;
         System.out.print("\nlist =   " + list);
+        ArrayList<Integer> list3 = (ArrayList<Integer>) listlist;
+        System.out.print("\nlist3 =   " + list3);
+
     }
 
     public static void main(String[] args) {
