@@ -9,29 +9,28 @@ import java.util.Random;
  * https://dev64.wordpress.com/2013/07/24/quick-sort/
  */
 public class QuickSort2_2Array extends ParentSorter {
-//    int j;
-    int count;
-    int partition(int arr[], int j, int k) {
-        this.j = j;
-        int i = j, ir = k;
+    int partition(int arr[], int left, int right) { // создает pivot, сортируя 2 части массива слева и справа от
+        // выбранного где-то посередине значения, и затем возвращает индекс этого pivot
         int tmp;
-        int pivot = arr[(j + k) / 2];
+        int pivot = arr[left + (right - left) / 2];
+//        int pivot = arr[new Random().nextInt(arr.length)]; // что интересно, со случайным pivot часто срабатывает с
+//// очень явно видной задержкой
 
-        while (i <= ir) {
-            while (arr[i] < pivot)
-                i++;
-            while (arr[ir] > pivot)
-                ir--;
+        while (left <= right) {
+            while (arr[left] < pivot)
+                left++;
+            while (arr[right] > pivot)
+                right--;
 
-            if (i <= ir) {
-                tmp = arr[i];
-                arr[i] = arr[ir];
-                arr[ir] = tmp;
-                i++;
-                ir--;
+            if (left <= right) {
+                tmp = arr[left];
+                arr[left] = arr[right];
+                arr[right] = tmp;
+                left++;
+                right--;
             }
         }
-        return i;
+        return left;
     }
 
     void quickSort(int arr[], int left, int right) {
@@ -42,7 +41,7 @@ public class QuickSort2_2Array extends ParentSorter {
             quickSort(arr, index, right);
     }
 
-    int[] getRandomArr() {
+    int[] getRandomArr(int count) {
         int [] arr = new int[count];
         Random rnd = new Random();
         for (int i = 0; i < count; i++)
@@ -56,21 +55,21 @@ public class QuickSort2_2Array extends ParentSorter {
         return arr;
     }
     void printArr(int[] arr) {
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < arr.length; i++)
             System.out.print(arr[i] + ", ");
     }
 
     @Override
     public int[] sort(int[] arr) {
-        k = count - 1;
+        k = arr.length - 1;
         quickSort(arr, j, k);
         return super.sort(arr);
     }
 
     public static void main(String[] args) {
         QuickSort2_2Array test = new QuickSort2_2Array();
-        test.count = 25;
-        int[] arr = test.getRandomArr();
+//        test.count = 25;
+        int[] arr = test.getRandomArr(25);
         test.printArr(arr);
         System.out.println("");
         test.sort(arr);
