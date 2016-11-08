@@ -2,6 +2,9 @@ package trainingTest;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Created by Ежище on 04.11.2016.
@@ -107,10 +110,13 @@ public class SomeVerification1 {
                 " с ними согласен, его зовут %s, но ему %d года.",
                 vasya.name, vasya.age, petr.name, petr.age, kolya.name, kolya.age);
 
-        System.out.print("System.in.read() = ");
-//        while(System.in.read() != (int)'q')
-            System.out.print(System.in.read() + ", ");
-        if(System.in.read() == (int)'q')
-            System.exit(0);
+        Calendar calendar = Calendar.getInstance(TimeZone.getDefault(), Locale.getDefault());
+        System.out.println("\n" + calendar.get(Calendar.YEAR));
+
+//        System.out.print("System.in.read() = ");
+////        while(System.in.read() != (int)'q')
+//            System.out.print(System.in.read() + ", ");
+//        if(System.in.read() == (int)'q')
+//            System.exit(0);
     }
 }
