@@ -68,7 +68,7 @@ public class QuickSortList extends ParentSorter {
     }
 
     public static void main(String[] args) {
-        new QuickSortList().printList(25);
+        new QuickSortList().printList(2500);
 //        System.out.println(new Random().nextInt(5));
     }
 }
