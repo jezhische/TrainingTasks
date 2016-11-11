@@ -9,7 +9,7 @@ public class Test6FileWriterAndReader {
     public static void main(String[] args) {
 
         try(FileWriter writer = new FileWriter("src//main//" +
-                "resources//pilotProbesData//Test2.txt", false)) // false - заменяем текст в файле,
+                "resources//Test2.txt", false)) // false - заменяем текст в файле,
                 // true - добавляем к уже содержащемуся там
         {
             // запись всей строки
@@ -25,7 +25,7 @@ public class Test6FileWriterAndReader {
         }
 
         // считывание файла прямо в массив
-        File file = new File("src//main//resources//pilotProbesData//Test2.txt");
+        File file = new File("src//main//resources//Test2.txt");
         char[] arrayBuffer = new char[(int)file.length()];
         try (FileReader reader = new FileReader(file)) {
             // считываем файл в массив символов - заставляем "reader читать в arrayBuffer" - @NotNull CharBuffer target:
