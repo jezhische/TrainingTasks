@@ -20,7 +20,7 @@ import java.io.*;
 /**
  * Created by Ежище on 10.11.2016.
  */
-public class Solution16_13_10 {
+public class Solution16_13_10_madSolution {
     public static String firstFileName;
     public static String secondFileName;
 
@@ -37,15 +37,14 @@ public class Solution16_13_10 {
         f.start();
         System.out.println("currentThread name is " + Thread.currentThread().getName());
         Thread.sleep(50); // Важный момент: если не дать текущему главному потоку (а это main) поспать, он выведет
-        // содержание файла раньше, чем поле readFromFile будет переписано дочерним потоком f. Честно говоря,
-        // я не придумал, как здесь применить join().
+        // содержание файла раньше, чем тот будет переписан дочерним потоком f.
         System.out.println(f.getFileContent());
     }
 
     public static class ReadFileThread implements ReadFileInterface {
 
-        private String fileName, readFromFile = "";
-        private File file; // и эти два String, и этот File создаются как переменные уровня экземпляра, а не локальные,
+        private String fileName;
+        private File file; // и этот String, и этот File создаются как переменные уровня экземпляра, а не локальные,
         // только из-за того, что у getFileContent() (как, собственно, и у run()) нет аргументов.
         // Вообще, интерфейс Runnable в этом смысле неудобный.
 
@@ -86,7 +85,16 @@ public class Solution16_13_10 {
 
         @Override
         public String getFileContent() {
-            return readFromFile;
+            try (BufferedReader buffer = new BufferedReader(new FileReader(file))) {
+                int a;
+                String temp = "";
+                while ((a = buffer.read()) != -1)
+                    temp += String.valueOf((char) a);
+                return String.format("Содержание файла \"%s\":\n", fileName) + temp;
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
+            return "Файл не прочитан";
         }
 
         @Override
@@ -104,6 +112,7 @@ public class Solution16_13_10 {
             System.out.printf("Thread %s got started\n", Thread.currentThread().getName()); // все эти лишние выводы
             // на печать я расставил как маркеры - чтобы было видно, как все происходит. Их можно удалить, и тогда
             // решение задачи примет вид, требуемый в условии.
+            String readFromFile = "";
             String temp = "";
             try (FileReader reader = new FileReader(file)) {
                 int c;
@@ -115,6 +124,14 @@ public class Solution16_13_10 {
             String[] splitString = (temp.split(","));
             for (String s : splitString)
                 readFromFile += s + " "; // ну... вот это имелось в виду под условием "Раздели пробелом строки файла"?
+            // И теперь переписываем файл в измененном виде, чтобы потом считать его в методе getFileContent().
+            // Дурной способ - нужно было просто дать главному потоку поспать, пока дочерний не завершит работу.
+            try (PrintWriter printInFile = new PrintWriter(file);) {
+                printInFile.write(readFromFile);
+                printInFile.flush();
+            } catch (FileNotFoundException ex) {
+                System.out.println(ex.getMessage());
+            }
             System.out.printf("Thread %s is finished\n", Thread.currentThread().getName());
         }
     }
