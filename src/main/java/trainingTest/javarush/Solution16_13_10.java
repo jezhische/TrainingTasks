@@ -86,7 +86,7 @@ public class Solution16_13_10 {
 
         @Override
         public String getFileContent() {
-            return readFromFile;
+            return String.format("Содержание файла \"%s\":\n", fileName) + readFromFile;
         }
 
         @Override
