@@ -23,10 +23,14 @@ import java.io.*;
 public class Solution16_13_10 {
     public static String firstFileName;
     public static String secondFileName;
-
-    public static void main(String[] args) throws InterruptedException {
+    static {
         firstFileName = "mom";
         secondFileName = "frame";
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+//        firstFileName = "mom";
+//        secondFileName = "frame";
         systemOutPrintln(firstFileName);
         systemOutPrintln(secondFileName);
     }
