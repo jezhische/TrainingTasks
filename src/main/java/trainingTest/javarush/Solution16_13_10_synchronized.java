@@ -23,7 +23,7 @@ import java.io.IOException;
 /**
  * Created by Ежище on 10.11.2016.
  */
-public class Solution16_13_10_synchronized {
+public class Solution16_13_10_Synchronized {
     public static String firstFileName;
     public static String secondFileName;
 
@@ -34,7 +34,7 @@ public class Solution16_13_10_synchronized {
         systemOutPrintln(secondFileName);
     }
 
-    public synchronized static void systemOutPrintln(String fileName) throws InterruptedException {
+    public static void systemOutPrintln(String fileName) throws InterruptedException {
         ReadFileInterface f = new ReadFileThread();
         f.setFileName(fileName);
         f.start();
@@ -46,8 +46,12 @@ public class Solution16_13_10_synchronized {
     }
 
     public static class ReadFileThread implements ReadFileInterface {
+        class CommonResource {
+            String readFromFile = "";
+        }
 
-        private String fileName, readFromFile = "";
+        CommonResource common = new CommonResource();
+        private String fileName;
         private File file; // и эти два String, и этот File создаются как переменные уровня экземпляра, а не локальные,
         // только из-за того, что у getFileContent() (как, собственно, и у run()) нет аргументов.
         // Вообще, интерфейс Runnable в этом смысле неудобный.
@@ -89,7 +93,7 @@ public class Solution16_13_10_synchronized {
 
         @Override
         public String getFileContent() {
-            return String.format("Содержание файла \"%s\":\n", fileName) + readFromFile;
+            return common.readFromFile;
         }
 
         @Override
@@ -108,16 +112,19 @@ public class Solution16_13_10_synchronized {
             // на печать я расставил как маркеры - чтобы было видно, как все происходит. Их можно удалить, и тогда
             // решение задачи примет вид, требуемый в условии.
             String temp = "";
-            try (FileReader reader = new FileReader(file)) {
-                int c;
-                while ((c = reader.read()) != -1)
-                    temp += String.valueOf((char) c);
-            } catch (IOException e) {
-                e.printStackTrace();
+            synchronized (common) {
+                try (FileReader reader = new FileReader(file)) {
+                    int c;
+                    while ((c = reader.read()) != -1)
+                        temp += String.valueOf((char) c);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                String[] splitString = (temp.split(","));
+                for (String s : splitString)
+                    common.readFromFile += s + " "; // ну... вот это имелось в виду под условием
+                // "Раздели пробелом строки файла"?
             }
-            String[] splitString = (temp.split(","));
-            for (String s : splitString)
-                readFromFile += s + " "; // ну... вот это имелось в виду под условием "Раздели пробелом строки файла"?
             System.out.printf("Thread %s is finished\n", Thread.currentThread().getName());
         }
     }
