@@ -1,6 +1,9 @@
 package trainingTest.javarush;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * Created by WORK on 14.11.2016.
@@ -19,7 +22,7 @@ import java.io.*;
  [все тело первого файла]
  [все тело второго файла]
  */
-public class Solution16_13_10FromAlexeyModified {
+public class Solution16_13_10FromAlexeyModified2 {
     private static String firstFileName;
     private static String secondFileName;
     static {
@@ -42,8 +45,7 @@ public class Solution16_13_10FromAlexeyModified {
     }
 
     private static void systemOutPrintln(String fileName) throws InterruptedException {
-        ReadFileInterface f = new ReadFileThread(); // создаем f как объект интерфейса, а не класса ReadFileThread.
-        // А в принципе, можно было бы и как образец класса. См. комментарий ниже.
+        ReadFileThread f = new ReadFileThread();
         f.setFileName(fileName);
         f.start();
         System.out.println(Thread.currentThread().getName());
@@ -51,39 +53,20 @@ public class Solution16_13_10FromAlexeyModified {
         System.out.println(f.getFileContent());
     }
 
-    private static interface ReadFileInterface {
 
-        void setFileName(String fullFileName);
-
-        String getFileContent();
-
-        void join() throws InterruptedException;
-
-        void start();
-    }
-
-
-
-
-    private static class ReadFileThread extends Thread implements ReadFileInterface // TODO: NB: в этом классе не
-            // имплементированы методы  void join() throws InterruptedException; и void start(); из интерфейса
-        // ReadFileInterface, хотя мы вроде как обязаны это сделать. Вместо этого их имплементирует родительский класс
-        // Tread, так что мы запросто можем их потом использовать в образце f без всякого переопределения еще раз
-        // в классе-наследнике ReadFileThread (тем более, что, например, метод join() финальный и не может быть
-            // переопределен).
-        // TODO: NB: а вот если образовывать объект f вот так: ReadFileThread f = new ReadFileThread(); , то можно было
-            // бы отказаться от имплементирования интерфейса и выкинуть этот интерфейс вовсе,
-            // см. Solution16_13_10FromAlexeyModified2
+    private static class ReadFileThread extends Thread // TODO: NB: здесь я отказался от использования интерфейса
+        // ReadFileInterface
+        // TODO: NB: и создал объект f вот так: ReadFileThread f = new ReadFileThread(); , теперь можно
+            //  отказаться от имплементирования интерфейса ReadFileInterface и выкинуть этот интерфейс вовсе,
+            // как я это здесь и сделал!
     {
         private String fullFileName;
 
-        @Override
         public void setFileName(String fullFileName)
         {
             this.fullFileName = fullFileName;
         }
 
-        @Override
         public String getFileContent()
         {
             StringBuilder sb = new StringBuilder();
