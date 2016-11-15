@@ -1,10 +1,8 @@
 package trainingTest;
 
+import java.io.Console;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * Created by Ежище on 04.11.2016.
@@ -112,6 +110,36 @@ public class SomeVerification1 {
 
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault(), Locale.getDefault());
         System.out.println("\n" + calendar.get(Calendar.YEAR));
+
+        Console console = System.console();
+// если удалось получить объект Console
+        if (console != null) {
+            Calendar cc = new GregorianCalendar();
+            console.printf("Сайт %1$s%n", "Javadevblog.com"); //распечатает Сайт Javadevblog.com"
+            console.printf("Текущее время: %1$tm %1$te,%1$tY%n", cc); //печатаем "Текущее время: 13 12,2015"
+            console.flush();
+        } else {
+            System.out.println("Объект Console не получен");
+        }
+        long currentTimeMillis = System.currentTimeMillis();
+        Date date = new Date(currentTimeMillis);
+        System.out.println("Текущее время в миллисекундах : " + currentTimeMillis);
+        System.out.println(date);
+
+        long nanoTime = System.nanoTime();
+        System.out.println("Текущее время в наносекундах : " + nanoTime);
+
+        //получаем переменные среды в виде коллекции Map
+//и просматриваем каждую
+        Map<String, String> envMap = System.getenv();
+        Set<String> keySet = envMap.keySet();
+        for(String key : keySet){
+            System.out.println("Ключ : " + key + " | значение : " + envMap.get(key));
+        }
+
+// получаем определенную переменную среды
+        String pathValue = System.getenv("PATH");
+        System.out.println("$PATH=" + pathValue);
 
 //        System.out.print("System.in.read() = ");
 ////        while(System.in.read() != (int)'q')
