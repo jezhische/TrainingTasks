@@ -1,0 +1,2 @@
+src//main//resources//allLines.txt
+src//main//resources//forRemoveLines.txt
