@@ -3,7 +3,7 @@ package trainingTest.utilityTest;
 //import cars.BmwCar;
 //import cars.FerrariCar;
 //import cars.MashkaCar;
-//import cars.trainingTest.Vehicle;
+//import cars.trainingTest.differentGarbage.Vehicle;
 //import dataStorageAndProcessing.CarModel;
 //import supportedClasses.Sorter;
 
@@ -30,12 +30,12 @@ public class MainWithListProbe {
 //        MashkaCar mashkaTest = new MashkaCar(car1);
 //        BmwCar bmwTest = new BmwCar(car2);
 //        FerrariCar ferrariTest = new FerrariCar(car3);
-//        trainingTest.Vehicle unsortedCarList[] = {mashkaTest.goVehicle(), bmwTest.goVehicle(), ferrariTest.goVehicle()};
+//        trainingTest.differentGarbage.Vehicle unsortedCarList[] = {mashkaTest.goVehicle(), bmwTest.goVehicle(), ferrariTest.goVehicle()};
 //        Sorter.sortVehicles(unsortedCarList);
 //        System.out.println("");
 //        // Теперь сделаем лист с объектами, засунем туда несортированный список, вытащим и посмотрим, что там с ним стало.
-//        List<trainingTest.Vehicle> list = new ArrayList<>();
-//        for (trainingTest.Vehicle vehicle : unsortedCarList) {
+//        List<trainingTest.differentGarbage.Vehicle> list = new ArrayList<>();
+//        for (trainingTest.differentGarbage.Vehicle vehicle : unsortedCarList) {
 //            list.add(vehicle);
 //        }
 //        SorterWithList.sortVehicles(list);

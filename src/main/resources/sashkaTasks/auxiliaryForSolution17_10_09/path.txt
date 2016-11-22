@@ -1,2 +1,4 @@
-src//main//resources//allLines.txt
-src//main//resources//forRemoveLines.txt
+src//main//resources//sashkaTasks//auxiliaryForSolution17_10_09//allLines.txt
+src//main//resources//sashkaTasks//auxiliaryForSolution17_10_09//forRemoveLines.txt
+
+src//main//resources//sashkaTasks//auxiliaryForSolution17_10_09//allLinesCorrupted.txt

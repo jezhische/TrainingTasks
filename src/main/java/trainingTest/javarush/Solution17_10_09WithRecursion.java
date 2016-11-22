@@ -21,19 +21,21 @@ import java.util.Scanner;
  * 4.2. выбросить исключение CorruptedDataException
  * Метод joinData должен вызываться в main. Все исключения обработайте в методе main.
  */
-public class Solution17_10_09 {
+public class Solution17_10_09WithRecursion {
     public static List<String> allLines = new ArrayList<String>();
     public static List<String> forRemoveLines = new ArrayList<String>();
-    private String fileNameQualifier = "\'allLines\'";
+    protected String fileNameQualifier = "\'allLines\'"; // пришлось сделать эти поля protected, чтобы они
+    // прошли тест, поскольку пока не умею тестировать private.
+    protected boolean pulse = true;
 
     public static void main(String[] args) {
-        Solution17_10_09 instance = new Solution17_10_09();
+        Solution17_10_09WithRecursion instance = new Solution17_10_09WithRecursion();
         try {
-            allLines = instance.readFiles();
-            forRemoveLines = instance.readFiles();
+            instance.readFiles();
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+//        System.out.println(allLines.size() + allLines.get(10));
         try {
             instance.joinData();
         } catch (CorruptedDataException17_10_09 ex) {
@@ -49,20 +51,35 @@ public class Solution17_10_09 {
         } catch (NullPointerException e) {
             System.out.println(e.getMessage());
         }
+//        System.out.println(allLines.size());
+//        System.out.println(allLines.size() + allLines.get(7));
     }
 
-    public List<String> readFiles() throws IOException {// условие задачи требует, чтобы все исключения были обработаны
+    public void readFiles() throws IOException {// условие задачи требует, чтобы все исключения были обработаны
         // в main. Хотя проще было бы обработать исключения прямо здесь через try-with-resources.
-        List<String> gotFromFile = new ArrayList<>();
+        // Кроме того, здесь я выпендрился и сделал метод с рекурсией, в результате он очень осложнил код.
         System.out.printf("Print full file name for %s list filling and press Enter\n", fileNameQualifier);
         Scanner scanner = new Scanner(System.in);
         BufferedReader reader = new BufferedReader(new FileReader(scanner.nextLine()));
-        String line;
-        while ((line = reader.readLine()) != null)
-            gotFromFile.add(line);
+            String line;
+            switch (fileNameQualifier) {
+                case "\'allLines\'":
+                    allLines.clear();
+                    while ((line = reader.readLine()) != null)
+                        allLines.add(line);
+                    fileNameQualifier = "\'forRemoveLines\'";
+                    break;
+                case "\'forRemoveLines\'":
+                    forRemoveLines.clear();
+                    while ((line = reader.readLine()) != null)
+                        forRemoveLines.add(line);
+                    pulse = false;
+                    break;
+            }
         reader.close();
-        fileNameQualifier = "\'forRemoveLines\'";
-        return gotFromFile;
+
+        if (pulse)
+            readFiles(); // рекурсия
     }
 
     public void joinData() throws CorruptedDataException17_10_09 {
