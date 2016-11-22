@@ -78,6 +78,22 @@ public class Solution17_10_09FromAlexey {
             throw new CorruptedDataException();
         }
 
+
+
+
+//        String s;
+//        int count = 0;
+//        for(int i = 0; i<forRemoveLines.size(); i++)
+//        {
+//            s = forRemoveLines.get(i);
+//            if (allLines.contains(s))
+//                allLines.remove(s);
+//            else {
+//                allLines.clear();
+//                throw new CorruptedDataException();
+//            }
+//        }
+
     }
 }
 
