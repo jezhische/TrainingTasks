@@ -25,6 +25,7 @@ public class VolatileDemo {
             }
             System.out.println("gui thread finished");
         }
+
     };
 
     // задача для игрового потока

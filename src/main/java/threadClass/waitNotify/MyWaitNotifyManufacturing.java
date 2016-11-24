@@ -1,5 +1,7 @@
 package threadClass.waitNotify;
 
+import java.util.LinkedList;
+
 /**
  * Created by Ежище on 23.11.2016.
  * Задача: Рабочий спит неопределенное время (не более 3000мс), затем производит болванку за 50мс и засыпает снова.
@@ -16,6 +18,8 @@ package threadClass.waitNotify;
  */
 public class MyWaitNotifyManufacturing {
     private int barsToSendToStorage = 3;
-//    LinkedList<>
-
+    LinkedList store = new LinkedList();
+    public static class Worker {}
+    public static class Loader {}                // грузчик
+    public static class Stockman {}          // кладовщик
 }
