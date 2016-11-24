@@ -1,4 +1,4 @@
-package threadClass;
+package threadClass.waitNotify;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
