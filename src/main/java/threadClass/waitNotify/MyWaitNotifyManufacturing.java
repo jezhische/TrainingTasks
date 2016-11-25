@@ -2,6 +2,8 @@ package threadClass.waitNotify;
 
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by Ежище on 23.11.2016.
@@ -23,34 +25,46 @@ public class MyWaitNotifyManufacturing {
     LinkedList store = new LinkedList();
 
     public static void main(String[] args) {
-        for (int i = 0; i < 20; i++)
-            new Thread(new Worker()).start();
+        ExecutorService ex = Executors.newFixedThreadPool(20);
+        for (int i = 0; i < 20; i++) {
+            ex.execute(new Worker());
+//            System.out.printf("поток %s %d: ", Thread.currentThread().getName(), i);
+        }
+        ex.shutdown();
+//        for (int i = 0; i < 20; i++) {
+//            new Thread(new Worker()).start();
+////            System.out.printf("поток %s %d: ", Thread.currentThread().getName(), i);
+//        }
     }
 
-    public static class Randomizer {
-        Random rand = new Random();
-        //            rand.setSeed(System.currentTimeMillis());
-        int timeToSleep = rand.nextInt(3000);
-    }
+
+
 
     public static class Worker implements Runnable {
 //        public static Worker worker = new Worker();
-
+        private static class Randomizer {
+            Random rand = new Random();
+            //            rand.setSeed(System.currentTimeMillis());
+            int timeToSleep = rand.nextInt(3000);
+        }
+          static Randomizer randomizer = new Randomizer();
         @Override
         public void run() {
 //            Random rand = new Random();
 ////            rand.setSeed(System.currentTimeMillis());
 //            int timeToSleep = rand.nextInt(3000);
 //            int timeToSleep = (int) (Math.random() * 3000);
-            Randomizer randomizer = new Randomizer();
-            int timeToSleep = randomizer.timeToSleep;
-            synchronized () {
+
+//            int timeToSleep = randomizer.timeToSleep;
+            synchronized (randomizer) {
                 try {
-                    Thread.sleep(timeToSleep);
+                    System.out.printf("%s стартовал, сразу заснул, затем ", Thread.currentThread().getName());
+                    Thread.sleep(randomizer.timeToSleep);
+                    randomizer.timeToSleep = randomizer.rand.nextInt(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                System.out.printf("я проснулся через %d миллисекунд\n", timeToSleep);
+                System.out.printf("%s проснулся через %d миллисекунд\n", Thread.currentThread().getName(), randomizer.timeToSleep);
             }
 
         }
