@@ -1,6 +1,7 @@
 package threadClass.waitNotify;
 
 import java.util.LinkedList;
+import java.util.Random;
 
 /**
  * Created by Ежище on 23.11.2016.
@@ -17,9 +18,47 @@ import java.util.LinkedList;
  * PS "не прекращает работать" - это похоже на использование volatile или java.util.concurrent, или просто synchronized.
  */
 public class MyWaitNotifyManufacturing {
-    private int barsToSendToStorage = 3;
+    private int countOfBarsToSendToStorage = 0; // , barsProducedByWorker;
+    LinkedList barsProducedByWorker = new LinkedList();
     LinkedList store = new LinkedList();
-    public static class Worker {}
-    public static class Loader {}                // грузчик
-    public static class Stockman {}          // кладовщик
+
+    public static void main(String[] args) {
+        for (int i = 0; i < 20; i++)
+            new Thread(new Worker()).start();
+    }
+
+    public static class Randomizer {
+        Random rand = new Random();
+        //            rand.setSeed(System.currentTimeMillis());
+        int timeToSleep = rand.nextInt(3000);
+    }
+
+    public static class Worker implements Runnable {
+//        public static Worker worker = new Worker();
+
+        @Override
+        public void run() {
+//            Random rand = new Random();
+////            rand.setSeed(System.currentTimeMillis());
+//            int timeToSleep = rand.nextInt(3000);
+//            int timeToSleep = (int) (Math.random() * 3000);
+            Randomizer randomizer = new Randomizer();
+            int timeToSleep = randomizer.timeToSleep;
+            synchronized () {
+                try {
+                    Thread.sleep(timeToSleep);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.printf("я проснулся через %d миллисекунд\n", timeToSleep);
+            }
+
+        }
+    }
+
+    public static class Loader {
+    }                // грузчик
+
+    public static class Stockman {
+    }          // кладовщик
 }
