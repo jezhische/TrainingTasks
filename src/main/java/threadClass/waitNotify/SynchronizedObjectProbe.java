@@ -15,16 +15,14 @@ import java.util.concurrent.Executors;
  * Грузчику все равно, что он несет, он неграмотный. А вот Кладовщик должен отделить зерна от плевел, выкинуть бутылки
  * и отправить 4 машины по 5 болванок в каждой, полупустые машины отправлять нельзя. После отправки машин он должен
  * записать, сколько всего времени было потрачено на производство и сколько болванок осталось на складе,
- * и отправить рабочего с грузчиком спать домой совсем (производство закончено).
+ * и отправить рабочего с грузчиком спать домой навсегда (производство закончено).
  * Можно в консоли или попробовать в окне.
  * PS "не прекращает работать" - это похоже на использование volatile или java.util.concurrent, или просто synchronized.
  */
-public class MyWaitNotifyManufacturing {
-    private int countOfBarsToSendToStorage = 0,
-            wholeTimeToManufacturing = 0; // , barsProducedByWorker;
-    private LinkedList barsProducedByWorker = new LinkedList();
-    public LinkedList store = new LinkedList();
-
+public class SynchronizedObjectProbe {
+    private int countOfBarsToSendToStorage = 0; // , barsProducedByWorker;
+    LinkedList barsProducedByWorker = new LinkedList();
+    LinkedList store = new LinkedList();
 
     public static void main(String[] args) {
         ExecutorService ex = Executors.newFixedThreadPool(20);
@@ -39,31 +37,36 @@ public class MyWaitNotifyManufacturing {
 //        }
     }
 
-    public int getWholeTimeToManufacturing() {
-        return wholeTimeToManufacturing;
-    }
+
 
 
     public static class Worker implements Runnable {
-        static final Object monitor = new Object();
-        private Random randomizer = new Random();
-        private int timeToSleep = randomizer.nextInt(3000);
-
+//        public static Worker worker = new Worker();
+        private static class Randomizer {
+            Random rand = new Random();
+            //            rand.setSeed(System.currentTimeMillis());
+            int timeToSleep = rand.nextInt(3000);
+        }
+          static Randomizer randomizer = new Randomizer();
         @Override
         public void run() {
-//            Random randomizer = new Random();
-//            int timeToSleep = randomizer.nextInt(3000);
+//            Random rand = new Random();
+////            rand.setSeed(System.currentTimeMillis());
+//            int timeToSleep = rand.nextInt(3000);
 //            int timeToSleep = (int) (Math.random() * 3000);
 
 //            int timeToSleep = randomizer.timeToSleep;
-//            synchronized (monitor) {
+            synchronized (randomizer) {
                 try {
-                    Thread.sleep(timeToSleep);
+                    System.out.printf("%s стартовал, сразу заснул, затем ", Thread.currentThread().getName());
+                    Thread.sleep(randomizer.timeToSleep);
+                    randomizer.timeToSleep = randomizer.rand.nextInt(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                System.out.printf("поток %s: %dмс\n", Thread.currentThread().getName(), timeToSleep);
-//            }
+                System.out.printf("%s проснулся через %d миллисекунд\n", Thread.currentThread().getName(), randomizer.timeToSleep);
+            }
+
         }
     }
 

@@ -1,4 +1,4 @@
-package garbage;
+package reflection.getClassAsIfConditionBase;
 
 import java.util.LinkedList;
 
