@@ -1,10 +1,14 @@
 package threadClass.waitNotify;
 
+import atomic.habrahabr5.Book;
+import atomic.habrahabr5.MyObject;
+
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 /**
  * Created by Ежище on 23.11.2016.
@@ -49,7 +53,11 @@ public class MyWaitNotifyManufacturing {
         private int timeToSleep = randomizer.nextInt(500);
         private boolean bottleInsteadOfBar = randomizer.nextInt(3) == 2;
         private AtomicInteger barNumber = new AtomicInteger(1);
-//        private volatile int barNumber = 0;
+//        private static volatile Integer barNumber = 1;
+//        private static final AtomicReferenceFieldUpdater<Integer,barNumber> updater =
+//                AtomicReferenceFieldUpdater.newUpdater(Integer.class, Book.class, "whatImReading");
+
+
 
         @Override
         public void run() {
