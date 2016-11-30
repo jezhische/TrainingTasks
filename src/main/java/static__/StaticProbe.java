@@ -13,6 +13,9 @@ public class StaticProbe {
     public static int sum(int a, int b) {return a + b;}
     static int c, d;
 
+    static Thread ghgh = new Thread(() -> {
+    });
+
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
@@ -20,7 +23,19 @@ public class StaticProbe {
         }
     };
 
+    interface Substract {
+        int deal(int x, int y);
+    }
+    static Substract sub = (x, y) -> (x - y);
+    static Substract divide = (x, y) -> (x / y);
+    static Substract incr = (x, y) -> (++x);
+
+    static int k = sub.deal(5, 6);
+
+    String q = new String("bvb");
+
     public static void main(String[] args) {
+
         System.out.println("StaticProbe.sum(5, 6) = " + StaticProbe.sum(5, 6));
         StaticProbe.c = 7;
         StaticProbe sp = new StaticProbe();
@@ -31,6 +46,10 @@ public class StaticProbe {
             new Thread(sp.runnable).start();
         }
         System.out.println("sp2.sum(c, d) = " + sp2.sum(c, d));
+
+        ghgh.start();
+        System.out.println("k = " + k);
+        System.out.println("l = " + StaticProbe.divide.deal(45, 8));
 
 
     }
