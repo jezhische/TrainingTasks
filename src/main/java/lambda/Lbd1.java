@@ -20,6 +20,11 @@ public class Lbd1 {
         return xy.deal(x, y);
     }
 
+    interface DefaultSumm {
+        default int newSumm(int a, int b) { return a + b;}
+    }
+//    DefaultSumm defaultSumm = (a, b) -> a + b; // лямбда с дефолтом не проходит
+
 
 
     public static void main(String[] args) {
