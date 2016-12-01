@@ -22,6 +22,7 @@ public class StaticProbe {
             System.out.println(Thread.currentThread().getName() + "++c + d = " + (++c + d));
         }
     };
+    Runnable runnab = () -> System.out.println("do something");
 
     interface Substract {
         int deal(int x, int y);
