@@ -4,17 +4,26 @@ package atomic.differentKind;
  * Created by WORK on 01.12.2016.
  */
 public class VolatileKind {
-    static volatile int count; // volatile не делает инкрементацию атомарной
-    static volatile boolean workNotDone;
+//    static volatile int count; // volatile не делает инкрементацию атомарной
+    static volatile boolean workDone;
+    static Integer count = 0;
+    static final Object object = new Object();
+
 
 
     static Runnable runnable = () -> {
-        for (int i = 0; i < 30000; i++) {
-            if (Thread.currentThread().isAlive())
-                workNotDone = false;
-            count++;
+//        if (Thread.currentThread().isAlive())
+//            workDone = false;
+        synchronized (object) {
+            workDone = false;
+            for (int i = 0; i < 30000; i++) {
+//                if (Thread.currentThread().isAlive())
+//                    workDone = false;
+                count++;
+            }
+            workDone = true;
         }
-        workNotDone = true;
+
     };
 
     public static void main(String[] args) throws InterruptedException {
@@ -22,7 +31,7 @@ public class VolatileKind {
             new Thread(runnable).start();
 
 //        Thread.sleep(1000); // так тоже можно, без последующей прослушки
-        while (!workNotDone) {
+        while (!workDone) {
             Thread.sleep(500);
         }
         System.out.println(count);
