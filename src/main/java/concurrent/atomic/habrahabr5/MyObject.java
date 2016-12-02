@@ -1,4 +1,4 @@
-package atomic.habrahabr5;
+package concurrent.atomic.habrahabr5;
 
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 

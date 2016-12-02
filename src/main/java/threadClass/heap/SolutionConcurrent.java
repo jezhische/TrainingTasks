@@ -1,4 +1,4 @@
-package threadClass;
+package threadClass.heap;
 
 /**
  * Created by Ежище on 20.09.2016.

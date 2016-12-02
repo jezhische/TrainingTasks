@@ -1,4 +1,4 @@
-package threadClass;
+package threadClass.heap;
 
 import java.util.concurrent.*;
 

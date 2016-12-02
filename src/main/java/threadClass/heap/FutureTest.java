@@ -1,4 +1,4 @@
-package threadClass;
+package threadClass.heap;
 
 import java.io.*;
 import java.util.*;

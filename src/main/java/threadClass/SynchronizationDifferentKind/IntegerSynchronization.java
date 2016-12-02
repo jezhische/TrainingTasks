@@ -1,13 +1,13 @@
-package atomic.differentKind;
+package threadClass.SynchronizationDifferentKind;
 
 /**
  * Created by WORK on 01.12.2016.
  */
-public class VolatileKind {
+public class IntegerSynchronization {
 //    static volatile int count; // volatile не делает инкрементацию атомарной
     static volatile boolean workDone;
     static Integer count = 0;
-    static final Object object = new Object();
+    static final Object object = new Object(); // а вот synchronized делает
 
 
 

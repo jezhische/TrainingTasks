@@ -1,9 +1,9 @@
-package threadClass;
+package threadClass.heap;
 
 /**
  * Created by WORK on 16.11.2016.
  */
-public class VolatileTest1 implements Runnable {
+public class JoinExample implements Runnable {
 
      static int a = 0;
     @Override
@@ -16,7 +16,7 @@ public class VolatileTest1 implements Runnable {
     public static void main(String[] args) throws InterruptedException {
         int i = 0;
         while (i < 10) {
-            Thread t = new Thread(new VolatileTest1());
+            Thread t = new Thread(new JoinExample());
             t.start();
             t.join();
             System.out.println("current Thread name is " + Thread.currentThread().getName());

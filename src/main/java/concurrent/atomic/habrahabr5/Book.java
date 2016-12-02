@@ -1,4 +1,4 @@
-package atomic.habrahabr5;
+package concurrent.atomic.habrahabr5;
 
 /**
  * Created by WORK on 29.11.2016.
