@@ -21,6 +21,8 @@ public class ReflectField1 {
         return field.toString();
     }
 
+
+
     public void setDeclaredInt(String name, int value) throws NoSuchFieldException, IllegalAccessException,
             IllegalArgumentException {
         Field field = cl.getDeclaredField(name);

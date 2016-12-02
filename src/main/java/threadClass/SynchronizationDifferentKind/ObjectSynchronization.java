@@ -3,7 +3,7 @@ package threadClass.SynchronizationDifferentKind;
 /**
  * Created by WORK on 01.12.2016.
  */
-public class IntegerSynchronization {
+public class ObjectSynchronization {
 //    static volatile int count; // volatile не делает инкрементацию атомарной
     static volatile boolean workDone;
     static Integer count = 0;
