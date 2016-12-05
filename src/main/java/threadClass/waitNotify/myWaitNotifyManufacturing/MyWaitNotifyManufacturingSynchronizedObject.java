@@ -1,4 +1,4 @@
-package threadClass.waitNotify;
+package threadClass.waitNotify.myWaitNotifyManufacturing;
 
 import java.util.LinkedList;
 import java.util.Random;
@@ -21,9 +21,9 @@ import java.util.concurrent.Executors;
  * Можно в консоли или попробовать в окне.
  * PS "не прекращает работать" - это похоже на использование volatile или java.util.concurrent, или просто synchronized.
  */
-public class MyWaitNotifyManufacturingSynchronizedClass {
+public class MyWaitNotifyManufacturingSynchronizedObject {
     private int countOfBarsToSendToStorage = 3, // первоначально нужно отправить на склад 3 болванки
-            wholeTimeToManufacturing = 0; // , barsProducedByWorker;
+            wholeTimeToManufacturing = 0; // , conveyor;
     public static LinkedList barsProducedByWorker = new LinkedList();
     public LinkedList store = new LinkedList();
 

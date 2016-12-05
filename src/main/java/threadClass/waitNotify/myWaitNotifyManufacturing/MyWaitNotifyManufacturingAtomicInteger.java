@@ -1,9 +1,10 @@
-package threadClass.waitNotify;
+package threadClass.waitNotify.myWaitNotifyManufacturing;
 
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Ежище on 23.11.2016.
@@ -21,9 +22,9 @@ import java.util.concurrent.Executors;
  * Можно в консоли или попробовать в окне.
  * PS "не прекращает работать" - это похоже на использование volatile или java.util.concurrent, или просто synchronized.
  */
-public class MyWaitNotifyManufacturingSynchronizedInteger {
+public class MyWaitNotifyManufacturingAtomicInteger {
     private int countOfBarsToSendToStorage = 3, // первоначально нужно отправить на склад 3 болванки
-            wholeTimeToManufacturing = 0; // , barsProducedByWorker;
+            wholeTimeToManufacturing = 0; // , conveyor;
     public static LinkedList barsProducedByWorker = new LinkedList();
     public LinkedList store = new LinkedList();
 
@@ -47,11 +48,19 @@ public class MyWaitNotifyManufacturingSynchronizedInteger {
         private Random randomizer = new Random();
         private int timeToSleep = randomizer.nextInt(500);
         private boolean bottleInsteadOfBar = randomizer.nextInt(3) == 2;
-//        private AtomicInteger barNumber = new AtomicInteger(1);
-        private static volatile Integer barNumber = 1;
+// -------------------------------------------------------------------
+//        private static volatile int barNumber = 1;
+// -------------------------------------------------------------------
+//        private static synchronized void incrementBarNumber (int barNumber) {
+//            Worker.barNumber = barNumber;
+//            ++barNumber;
+//        }
+//        public static synchronized int getBarNumber() { return barNumber; }
+// ---------------------------------------------------------------------------
+                private static final AtomicInteger barNumber = new AtomicInteger(0);
+// ---------------------------------------------------------------------------
 //        private static final AtomicReferenceFieldUpdater<Integer,barNumber> updater =
 //                AtomicReferenceFieldUpdater.newUpdater(Integer.class, Book.class, "whatImReading");
-
 
 
         @Override
@@ -60,17 +69,17 @@ public class MyWaitNotifyManufacturingSynchronizedInteger {
             synchronized (monitor) {
                 try {
                     Thread.sleep(timeToSleep);
+                    int currentBarNumber = barNumber.incrementAndGet();
                     if (!bottleInsteadOfBar)
-                        barsProducedByWorker.addLast(barNumber);
+                        barsProducedByWorker.addLast(currentBarNumber);
                     else
-                        barsProducedByWorker.addLast(String.valueOf(barNumber));
+                        barsProducedByWorker.addLast(String.valueOf(currentBarNumber));
                     System.out.println(barsProducedByWorker);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 System.out.printf("поток %s: %dмс\n", Thread.currentThread().getName(), timeToSleep);
             }
-           synchronized (barNumber) { ++ barNumber; }
         }
     }
 

@@ -31,7 +31,7 @@ public class AtomicCounter {
     }; // та же запись с method reference: Runnable runnable = AtomicCounter::increment;
 
     public static void main(String[] args) {
-        set(0);
+//        set(0);
 //        ExecutorService es = Executors.newFixedThreadPool(100); // подставь сюда newCachedThreadPool()
 //        for (int i = 0; i < 100; i++) // или подставь сюда 200
 //            es.execute(new AtomicCounter().runnable);
@@ -41,5 +41,10 @@ AtomicCounter ac = new AtomicCounter();
         for (int i = 0; i < 1000; i++)
             new Thread(ac.runnable).start();
         System.out.println(get());
+
+        int i;
+        for (i = 0; i < 1000; i++);
+        System.out.println(i);
     }
+
 }

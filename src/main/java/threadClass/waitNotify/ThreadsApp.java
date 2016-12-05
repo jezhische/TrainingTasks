@@ -21,7 +21,7 @@ class Store{
     public synchronized void get() {
         while (product<1) {
             try {
-                wait();
+                wait(); // эта запись означает this.wait(); здесь this - это this.Customer
             }
             catch (InterruptedException e) {
             }
@@ -34,7 +34,7 @@ class Store{
     public synchronized void put() {
         while (product>=3) {
             try {
-                wait();
+                wait(); // эта запись означает this.wait(); здесь this - это this.Producer
             }
             catch (InterruptedException e) {
             }
@@ -54,7 +54,7 @@ class Producer implements Runnable{
     }
     public void run(){
         for (int i = 1; i < 6; i++) {
-            store.put();
+            store.put(); // здесь wait() обращается к экземпляру Producer, т.е. к потоку, в котором он запущен
         }
     }
 }
@@ -67,7 +67,7 @@ class Consumer implements Runnable{
     }
     public void run(){
         for (int i = 1; i < 6; i++) {
-            store.get();
+            store.get(); // здесь wait() обращается к экземпляру Customer, т.е. к потоку, в котором он запущен
         }
     }
 }

@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
  * PS "не прекращает работать" - это похоже на использование volatile или java.util.concurrent, или просто synchronized.
  */
 public class SynchronizedObjectProbe {
-    private int countOfBarsToSendToStorage = 0; // , barsProducedByWorker;
+    private int countOfBarsToSendToStorage = 0; // , conveyor;
     LinkedList barsProducedByWorker = new LinkedList();
     LinkedList store = new LinkedList();
 
