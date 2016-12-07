@@ -85,8 +85,8 @@ public class MyWaitNotifyManufacturing {
         locker = new ReentrantLock();
         condition = locker.newCondition();
         // а вот семафор - это для доступа на склад:
-        semaphore = new Semaphore(1); // (поскольку только 1 поток одновременно будет работать на складе,
-        // то permits = 1)
+        semaphore = new Semaphore(1); // (permits = 1, поскольку только 1 поток одновременно будет работать
+        // на складе).
         // флажок о том, что на склад доставлены новые болванки, пока опущен:
         stockRefilled = false;
         // по условию, вначале грузчику нужно отнести на склад 3 болванки:
@@ -103,12 +103,18 @@ public class MyWaitNotifyManufacturing {
 //        Worker worker = manufacturing.new Worker(); // полная форма записи для внутреннего (не-анонимного)
 //        //  класса: MyWaitNotifyManufacturing.Worker worker = manufacturing.new Worker();
 // ----------------------------------------------------------------------------------------------------
+        // Для Runnable, кажется, без разницы, как запускать потоки, например:
         ExecutorService ex = Executors.newFixedThreadPool(4);
+        // Рабочий запущен:
         ex.submit(manufacturing.worker); // для Runnable не знаю, в чем разница между submit и execute
+        // Грузчик запущен:
         ex.execute(manufacturing.loader);
+        // Кладовщик запущен:
         ex.execute(manufacturing.stockman);
+        // По окончании работы, всех закрываем:
         ex.shutdown();
 // ----------------------------------------------------------------------------------------------------
+        // Можно было и так:
 //        Thread workerWorks = new Thread(manufacturing.worker);
 //        Thread loaderLoad = new Thread(manufacturing.loader);
 //        Thread stockmanHandles = new Thread(manufacturing.stockman);
@@ -125,6 +131,7 @@ public class MyWaitNotifyManufacturing {
 //            e.printStackTrace();
 //        }
 // --------------------------------------------------------------------------------------------------------
+        // Например, если main должен выполнить следующее:
 //        System.out.println("Рабочий посылает на склад:");
 //        for (Object bar : conveyor) {
 //            if (bar.getClass().equals(Integer.class))
@@ -135,11 +142,15 @@ public class MyWaitNotifyManufacturing {
     }
 
     public Runnable worker = () -> { // это Рабочий
-
+        // Что нужно Рабочему для работы?
+        // Номер текущей болванки:
         int currentBarNumber = 1;
         Random randomizer = new Random();
+        // Случайное (но в обозначенных границах) время для сна:
         int timeToSleep = randomizer.nextInt(500);
+        // Случайный номер для замены болванки бутылкой:
         boolean bottleInsteadOfBar = randomizer.nextInt(3) == 2;
+        // Имя:
         Thread.currentThread().setName("Worker");
         System.out.printf("Рабочий %s запущен!\n", Thread.currentThread().getName());
         while (workingDay) {
@@ -147,34 +158,49 @@ public class MyWaitNotifyManufacturing {
                 Thread.sleep(timeToSleep); // sleep() is static. Java docs: "Thread.sleep causes the current thread
                 // to suspend execution for a specified period." (https://docs.oracle.com/javase/tutorial/essential/concurrency/sleep.html)
                 // so no need to write Thread.currentThread().sleep(...);
+                // Замеряем время работы для того, чтобы Кладовщик по окончании рабочего дня взял эти данные:
                 wholeTimeToManufacturing += timeToSleep;
-                locker.lock(); // это нечто вроде заменителя блока synchronized, заканчивается на unlock().
-                while (conveyor.size() >= countOfBarsToSendToStorage)
-                    condition.await(); // работает так же, как wait() - если на конвейере болванок больше определенного
-                // количества, доступ к фрагменту кода между condition.await() и locker.unlock() закрыт.
+                // Рабочий блокирует для себя конвейер - это нечто вроде заменителя блока synchronized,
+                // заканчивается на unlock():
+                locker.lock();
+                while (conveyor.size() >= countOfBarsToSendToStorage) {
+                    // Когда болванок на конвейере болванок столько, сколько Грузчик загадал забрать, Рабочий
+                    // теряет возможность класть новые, пока Грузчик не забрал уже положенные.
+                    // await() работает так же, как wait() - если на конвейере болванок больше определенного
+                    // количества, доступ Рабочему к фрагменту кода между condition.await() и locker.unlock() закрыт.
+                    condition.await();
+                }
+                // А вот если предыдущее условие ложно, дальнейший код выполняется:
                 if (!bottleInsteadOfBar) {
                     Thread.sleep(50);
                     wholeTimeToManufacturing += 50;
+                    // Рабочий кладет на конвейер болванку:
                     conveyor.offer(currentBarNumber); // добавление в конец очереди
                     System.out.printf("Рабочий %s спал %dмс, затем проснулся и за 50мс сделал болванку с порядковым" +
                             " номером %d\n", Thread.currentThread().getName(), timeToSleep, currentBarNumber);
                 } else {
+                    // Или бутылку:
                     conveyor.offer(String.valueOf(currentBarNumber));
                     System.out.printf("Рабочий %s спал %dмс, затем проснулся и вместо работы подложил на конвейер пустую" +
                                     " бутылку с порядковым номером %s\n", Thread.currentThread().getName(), timeToSleep,
                             String.valueOf(currentBarNumber));
                 }
-                condition.signalAll(); // сигнал о том, что блокировка с конвейера снята и можно забрать детали, если
+                // И объявляет о том, что конвейер снова доступен для всех, у кого есть разрешение им овладеть (или,
+                // кстати, также для тех, кто захочет это сделать без разрешения):
+                condition.signalAll(); //(это сигнал о том, что блокировка с конвейера снята и можно забрать детали, если
                 // Грузчику позволяет его собственное условие. Если нет - Рабочий будет класть болванки на конвейер,
-                // пока их количество не достигнет countOfBarsToSendToStorage.
+                // пока их количество не достигнет countOfBarsToSendToStorage).
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 e.printStackTrace();
             } finally { // обязательное условие для разблокировки ресурса в любом случае, поэтому в блоке finally
                 locker.unlock();
             }
-            currentBarNumber++; // TODO: AtomicInteger... или достаточно volatile? Потоки ведь здесь не конкурируют...
-            timeToSleep = randomizer.nextInt(50);
+            // определяет номер следующей по порядку болванки:
+            currentBarNumber++;
+            // определяет, сколько он сейчас будет спать:
+            timeToSleep = randomizer.nextInt(500);
+            // положит ли он в следующий раз болванку или бутылку:
             bottleInsteadOfBar = randomizer.nextInt(3) == 2;
             if (currentBarNumber == 21) {
                 workingDay = false;
@@ -188,35 +214,37 @@ public class MyWaitNotifyManufacturing {
         System.out.printf("Грузчик %s собирается отнести на склад охапку из %d болванок и пока пошел спать.\n",
                 Thread.currentThread().getName(), countOfBarsToSendToStorage);
         Random randomizer = new Random();
-        while (workingDay) { // !conveyor.isEmpty() && workingDay
-//            int previous = countOfBarsToSendToStorage;
+        while (workingDay) {
             locker.lock();
             try {
-                while (conveyor.size() < countOfBarsToSendToStorage && workingDay) // пока на конвейере нет нужного
-                    // количества болванок и рабочий день еще не закончен, грузчик спит.
+                while (conveyor.size() < countOfBarsToSendToStorage && workingDay) {
+                    // пока на конвейере нет нужного количества болванок и рабочий день еще не закончен, Грузчик спит.
                     condition.await();
+                }
                 // поле, чтобы проверить, сколько болванок отнесет Грузчик - в конце производства на конвейере может
                 // остаться меньше болванок, чем он собирался отнести, и он должен будет отчитаться об этом:
                 int shippedOnStorageThisTime = 0;
                 // просыпаясь, грузчик берет болванки с конвейера в порядке от первой к последней, чтобы отнести их
                 // на склад:
                 while (!conveyor.isEmpty()) {
-                    ++shippedOnStorageThisTime; // ( - считаем, сколько предметов он берет с конвейера)
-                    // Грузчик проверяет, свободен ли доступ на склад:
+                    // Считаем, сколько предметов он берет с конвейера:
+                    ++shippedOnStorageThisTime;
+                    // Грузчик захватывает доступ на склад (если Кладовщик не успел еще сделать этого, но Кладовщик
+                    // будет запущен позже):
                     semaphore.acquire(); // (acquire() бросает InterruptedException, но мы уже внутри блока try,
                     // который его отлавливает)
-                    // Если склад свободен, то Грузчик овладевает складом и загружает туда то, что он берет с конвейера:
+                    // и загружает туда то, что он берет с конвейера:
                     store.offer(conveyor.pop());
-                    // Он поднимает флажок как знак Кладовщику, что он что-то принес:
-                    stockRefilled = true;
                     // а потом освобождает доступ на склад:
                     semaphore.release();
                 }
-                countOfBarsToSendToStorage = randomizer.nextInt(5) + 2; // и выбирает, сколько болванок нести
-                // в следующий раз.
-                condition.signalAll(); // и сигнализирует, что он освободил конвейер. signalAll() применяется на случай,
-                // если больше двух потоков будут использовать лок; если потоков с локом только два, достаточно
-                // использовать signal().
+                // и поднимает флажок как знак Кладовщику, что он что-то принес:
+                stockRefilled = true;
+                // затем выбирает, сколько болванок нести в следующий раз:
+                countOfBarsToSendToStorage = randomizer.nextInt(5) + 2;
+                // и сигнализирует, что он освободил конвейер. signalAll() применяется на случай, если больше двух
+                // потоков будут использовать лок; если потоков с локом только два, достаточно использовать signal().
+                condition.signalAll();
                 if (workingDay)
                     System.out.printf("Грузчик %s отнес на склад %d предметов с конвейера, решил, что в следующий раз " +
                                     "отнесет %d болванок, и пошел спать.\n", Thread.currentThread().getName(),
