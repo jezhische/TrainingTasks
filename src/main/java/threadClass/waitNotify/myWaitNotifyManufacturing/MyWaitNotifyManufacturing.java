@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -40,17 +41,17 @@ public class MyWaitNotifyManufacturing {
     /**
      * сколько болванок Грузчик решает отправить на склад в этот раз (первоначально 3):
      */
-    private volatile int countOfBarsToSendToStorage = 3,
+    private volatile int countOfBarsToSendToStorage,
     /**
      * время, затраченное на производство:
      */
-    wholeTimeToManufacturing = 0;
+    wholeTimeToManufacturing;
     /**
      * место, в которое Рабочий складывает произведенные болванки и бутылки, и откуда Грузчик их забирает:
      */
     public static ConcurrentLinkedDeque conveyor = new ConcurrentLinkedDeque();
     /**
-     * склад с болванками, отделенными от бутылок:
+     * склад с болванками, из которых еще нужно выбрать бутылки:
      */
     public LinkedList store = new LinkedList();
     /**
@@ -60,7 +61,7 @@ public class MyWaitNotifyManufacturing {
     /**
      * продолжается или закончено производство
      */
-    private static boolean workingDay = true;
+    private static boolean workingDay;
     /**
      * блокиратор для работы с конвейером:
      */
@@ -69,10 +70,31 @@ public class MyWaitNotifyManufacturing {
      * условие для блокиратора:
      */
     private Condition condition;
+    /**
+     * семафор-блокиратор для работы со складом:
+     */
+    private Semaphore semaphore;
+    /**
+     * флажок, чтобы пометить пополнение на складе:
+     */
+    private boolean stockRefilled;
 
-    public MyWaitNotifyManufacturing() { // при создании объекта класса сразу создаем блокиратор и условие для него:
+    public MyWaitNotifyManufacturing() {
+        // при создании объекта класса в конструкторе сразу создаем блокиратор и условие для него - этот блокиратор
+        // предназначен для работы с конвейером, будет открывать-закрывать к нему доступ:
         locker = new ReentrantLock();
         condition = locker.newCondition();
+        // а вот семафор - это для доступа на склад:
+        semaphore = new Semaphore(1); // (поскольку только 1 поток одновременно будет работать на складе,
+        // то permits = 1)
+        // флажок о том, что на склад доставлены новые болванки, пока опущен:
+        stockRefilled = false;
+        // по условию, вначале грузчику нужно отнести на склад 3 болванки:
+        countOfBarsToSendToStorage = 3;
+        // рабочий день начинается:
+        workingDay = true;
+        // пока что еще не потрачено ни миллисекунды на производство:
+        wholeTimeToManufacturing = 0;
     }
 
     public static void main(String[] args) {
@@ -132,7 +154,7 @@ public class MyWaitNotifyManufacturing {
                 // количества, доступ к фрагменту кода между condition.await() и locker.unlock() закрыт.
                 if (!bottleInsteadOfBar) {
                     Thread.sleep(50);
-                    timeToSleep += 50;
+                    wholeTimeToManufacturing += 50;
                     conveyor.offer(currentBarNumber); // добавление в конец очереди
                     System.out.printf("Рабочий %s спал %dмс, затем проснулся и за 50мс сделал болванку с порядковым" +
                             " номером %d\n", Thread.currentThread().getName(), timeToSleep, currentBarNumber);
@@ -160,7 +182,7 @@ public class MyWaitNotifyManufacturing {
         }
         System.out.printf("Рабочий %s остановлен!\n", Thread.currentThread().getName());
     };
-    
+
     public Runnable loader = () -> { // это Грузчик
         Thread.currentThread().setName("Loader");
         System.out.printf("Грузчик %s собирается отнести на склад охапку из %d болванок и пока пошел спать.\n",
@@ -173,12 +195,22 @@ public class MyWaitNotifyManufacturing {
                 while (conveyor.size() < countOfBarsToSendToStorage && workingDay) // пока на конвейере нет нужного
                     // количества болванок и рабочий день еще не закончен, грузчик спит.
                     condition.await();
-                int shippedOnStorageThisTime = 0; // проверим, сколько болванок отнесет Грузчик - в конце производства
-                // на конвейере может остаться меньше болванок, чем он собирался отнести.
-                while (!conveyor.isEmpty()) { // просыпаясь, грузчик берет болванки с конвейера в порядке от первой
-                    // к последней и относит их на склад.
-                    ++shippedOnStorageThisTime;
+                // поле, чтобы проверить, сколько болванок отнесет Грузчик - в конце производства на конвейере может
+                // остаться меньше болванок, чем он собирался отнести, и он должен будет отчитаться об этом:
+                int shippedOnStorageThisTime = 0;
+                // просыпаясь, грузчик берет болванки с конвейера в порядке от первой к последней, чтобы отнести их
+                // на склад:
+                while (!conveyor.isEmpty()) {
+                    ++shippedOnStorageThisTime; // ( - считаем, сколько предметов он берет с конвейера)
+                    // Грузчик проверяет, свободен ли доступ на склад:
+                    semaphore.acquire(); // (acquire() бросает InterruptedException, но мы уже внутри блока try,
+                    // который его отлавливает)
+                    // Если склад свободен, то Грузчик овладевает складом и загружает туда то, что он берет с конвейера:
                     store.offer(conveyor.pop());
+                    // Он поднимает флажок как знак Кладовщику, что он что-то принес:
+                    stockRefilled = true;
+                    // а потом освобождает доступ на склад:
+                    semaphore.release();
                 }
                 countOfBarsToSendToStorage = randomizer.nextInt(5) + 2; // и выбирает, сколько болванок нести
                 // в следующий раз.
@@ -204,19 +236,30 @@ public class MyWaitNotifyManufacturing {
 
     public Runnable stockman = () -> { // это Кладовщик
         Thread.currentThread().setName("Stockman");
-            locker.lock();
-            try {
-                while (workingDay) {
-                    condition.await();
-//                    Thread.sleep(500);
+        // locker использовался Рабочим и Грузчиком для проверки занятости конвейера, но здесь Кладовщик использует его,
+        // чтобы поспать, пока в конце рабочего дня не нужно будет записать wholeTimeToManufacturing
+        locker.lock();
+        try {
+            while (workingDay) {
+                condition.await();
+
+                // Вот Кладовщик замечает поднятый Грузчиком флажок и проверяет, свободен ли доступ на склад:
+                if (stockRefilled) {
+                    semaphore.acquire();
+                    System.out.println(store.peekLast());
+                    // и затем опускает флажок:
+                    stockRefilled = false;
+                    // и освобождает доступ на склад:
+                    semaphore.release();
+
                 }
-                condition.signalAll();
-                System.out.println(wholeTimeToManufacturing);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
-            finally {
-                locker.unlock();
-            }
+            System.out.println("wholeTimeToManufacturing = " + wholeTimeToManufacturing);
+            condition.signalAll();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            locker.unlock();
+        }
     };
 }
