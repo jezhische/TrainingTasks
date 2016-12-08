@@ -271,9 +271,11 @@ public class MyWaitNotifyManufacturing {
             while (workingDay) {
                 condition.await();
 
-                // Вот Кладовщик замечает поднятый Грузчиком флажок и проверяет, свободен ли доступ на склад:
+                // Но вот во сне Кладовщик замечает поднятый Грузчиком флажок и проверяет, свободен ли доступ на склад:
                 if (stockRefilled) {
-                    semaphore.acquire();
+                    // И если свободен, захватывает общий реурс (склад) в следующем участке кода:
+                    semaphore.acquire(); // throws InterruptedException, но оно уже отловлено здесь
+
                     System.out.println(store.peekLast());
                     // и затем опускает флажок:
                     stockRefilled = false;
