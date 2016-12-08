@@ -27,7 +27,9 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>
  * Грузчику все равно, что он несет, он неграмотный. А вот Кладовщик должен отделить зерна от плевел, выкинуть бутылки
  * в специальный мусорный бак и отправить 4 машины по 5 болванок в каждой, полупустые машины отправлять нельзя.
- * После отправки машин он должен остановить производство болванок, побудить Грузчика принести на склад последние
+ * Машины все уже готовы и стоят ждут, очередь они не соблюдают. Они должны отвезти болванки на удаленный склад и там
+ * их и оставить.
+ * После отправки машин Кладовщик должен остановить производство болванок, побудить Грузчика принести на склад последние
  * оставшиеся болванки-бутылки и отправить рабочего с грузчиком спать домой совсем (производство закончено), а
  * также записать, сколько всего времени было потрачено на производство, сколько болванок осталось на складе,
  * сколько бутылок было подложено и с каким порядковым номером.
@@ -47,13 +49,14 @@ public class MyWaitNotifyManufacturing {
      */
     wholeTimeToManufacturing;
     /**
-     * место, в которое Рабочий складывает произведенные болванки и бутылки, и откуда Грузчик их забирает:
+     * конвейер, на который Рабочий складывает произведенные болванки и бутылки, и откуда Грузчик их забирает:
      */
-    public static ConcurrentLinkedDeque conveyor = new ConcurrentLinkedDeque();
+    public static ConcurrentLinkedDeque conveyor = new ConcurrentLinkedDeque(); // это хранилище не обязано быть
+    // из пакета concurrent, поскольку к нему обращаются только 2 потока и строго по очереди, через объект Lock.
     /**
      * склад с болванками, из которых еще нужно выбрать бутылки:
      */
-    public LinkedList store = new LinkedList();
+    public LinkedList stock = new LinkedList();
     /**
      * специальный мусорный бак для бутылок:
      */
@@ -78,6 +81,8 @@ public class MyWaitNotifyManufacturing {
      * флажок, чтобы пометить пополнение на складе:
      */
     private boolean stockRefilled;
+    /** Объект для синхронизации действий Кладовщика и Грузовиков на складе: */
+    public static final Object stockMonitor = new Object();
 
     public MyWaitNotifyManufacturing() {
         // при создании объекта класса в конструкторе сразу создаем блокиратор и условие для него - этот блокиратор
@@ -234,7 +239,7 @@ public class MyWaitNotifyManufacturing {
                     semaphore.acquire(); // (acquire() бросает InterruptedException, но мы уже внутри блока try,
                     // который его отлавливает)
                     // и загружает туда то, что он берет с конвейера:
-                    store.offer(conveyor.pop());
+                    stock.offer(conveyor.pop());
                     // а потом освобождает доступ на склад:
                     semaphore.release();
                 }
@@ -274,10 +279,24 @@ public class MyWaitNotifyManufacturing {
                 // Но вот во сне Кладовщик замечает поднятый Грузчиком флажок и проверяет, свободен ли доступ на склад:
                 if (stockRefilled) {
                     // И если свободен, захватывает общий реурс (склад) в следующем участке кода:
-                    semaphore.acquire(); // throws InterruptedException, но оно уже отловлено здесь
-
-                    System.out.println(store.peekLast());
-                    // и затем опускает флажок:
+                    semaphore.acquire(); // acquire() throws InterruptedException, но оно уже отловлено здесь
+                    // перебирает и проверяет то, что принес Грузчик: болванки оставляет, бутылки - в мусорку:
+                    Object temp = new Object(); // (неизвестный пока объект, извлеченный Кладовщиком со склада)
+                    int index = 1; // (счетчик бутылок в мусорке)
+                    while (!stock.isEmpty()) {
+                        temp = stock.peek(); // (перебирает с головы, с первого элемента, принесенного Грузчиком).
+                        if (temp.getClass().equals(String.class)) {
+                            trashBin.put(index, "бутылка" + (String) temp);
+                            stock.remove();
+                        }
+                    }
+                    // Кладовщик проверяет, достаточно ли болванок осталось на складе после чистки того, что принес
+                    // Грузчик, и если да, то дает доступ к складу одной из ожидающих машин (какая первой окажется рядом)
+                    synchronized (stockMonitor) {
+                    if (stock.size() >= 5)
+                    System.out.println(stock.peekLast());
+                    }
+                    // и затем опускает флажок на складе:
                     stockRefilled = false;
                     // и освобождает доступ на склад:
                     semaphore.release();
@@ -291,5 +310,9 @@ public class MyWaitNotifyManufacturing {
         } finally {
             locker.unlock();
         }
+    };
+
+    public Runnable truck = () -> { // это Грузовики
+
     };
 }
