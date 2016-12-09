@@ -119,6 +119,8 @@ public class MyWaitNotifyManufacturing {
         ex.execute(manufacturing.loader);
         // Кладовщик запущен:
         ex.execute(manufacturing.stockman);
+
+        ex.execute(manufacturing.truck);
         // По окончании работы, всех закрываем:
         ex.shutdown();
 // ----------------------------------------------------------------------------------------------------
@@ -305,15 +307,8 @@ public class MyWaitNotifyManufacturing {
 //                            stock.remove();
                         } else if (temp.getClass().equals(Integer.class)) {
                             shelf.add(temp);
+                            System.out.println(shelf);
                         }
-                    }
-                    // Кладовщик проверяет, достаточно ли болванок осталось на складе после чистки того, что принес
-                    // Грузчик, и если да, то дает доступ к складу одной из ожидающих машин (какая первой окажется рядом)
-                    synchronized (stockMonitor) {
-                        if (shelf.size() >= 5) {
-//                            wait();
-                        }
-//                        notify();
                     }
                     if (shelf.size() != 0)
                         System.out.println(shelf.get(shelf.size() - 1));
@@ -321,8 +316,15 @@ public class MyWaitNotifyManufacturing {
                     stockRefilled = false;
                     // и освобождает доступ на склад:
                     semaphore.release();
-
                 }
+                // Кладовщик проверяет, достаточно ли болванок осталось на складе после чистки того, что принес
+                // Грузчик, и если да, то дает доступ к складу одной из ожидающих машин (какая первой окажется рядом)
+//                synchronized (shelf) {
+//                    if (shelf.size() >= 5) {
+//                        wait();
+//                    }
+//                        notify();
+//                }
             }
             System.out.println("wholeTimeToManufacturing = " + wholeTimeToManufacturing);
             condition.signalAll();
@@ -334,6 +336,17 @@ public class MyWaitNotifyManufacturing {
     };
 
     public Runnable truck = () -> { // это Грузовики
-
+        synchronized (shelf) {
+                    if (shelf.size() < 5) {
+//                        try {
+//                            wait();
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+                    }
+//            System.out.println("Грузовик " + shelf);
+//                        notify();
+                }
+        System.out.println("Грузовик " + shelf);
     };
 }
