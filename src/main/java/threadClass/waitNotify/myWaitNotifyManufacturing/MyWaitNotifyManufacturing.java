@@ -1,9 +1,6 @@
 package threadClass.waitNotify.myWaitNotifyManufacturing;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -81,8 +78,14 @@ public class MyWaitNotifyManufacturing {
      * флажок, чтобы пометить пополнение на складе:
      */
     private boolean stockRefilled;
-    /** Объект для синхронизации действий Кладовщика и Грузовиков на складе: */
+    /**
+     * Объект для синхронизации действий Кладовщика и Грузовиков на складе:
+     */
     public static final Object stockMonitor = new Object();
+    /**
+     * Полка, на которую Кладовщик будет откладывать отсортированные болванки, в которых он уверен:
+     */
+    private List<Object> shelf = new ArrayList<>();
 
     public MyWaitNotifyManufacturing() {
         // при создании объекта класса в конструкторе сразу создаем блокиратор и условие для него - этот блокиратор
@@ -215,6 +218,8 @@ public class MyWaitNotifyManufacturing {
     };
 
     public Runnable loader = () -> { // это Грузчик
+        // Что нужно Грузчику?:
+
         Thread.currentThread().setName("Loader");
         System.out.printf("Грузчик %s собирается отнести на склад охапку из %d болванок и пока пошел спать.\n",
                 Thread.currentThread().getName(), countOfBarsToSendToStorage);
@@ -222,27 +227,32 @@ public class MyWaitNotifyManufacturing {
         while (workingDay) {
             locker.lock();
             try {
+                // Пока на конвейере нет нужного количества болванок и рабочий день еще не закончен, Грузчик спит:
                 while (conveyor.size() < countOfBarsToSendToStorage && workingDay) {
-                    // пока на конвейере нет нужного количества болванок и рабочий день еще не закончен, Грузчик спит.
                     condition.await();
                 }
-                // поле, чтобы проверить, сколько болванок отнесет Грузчик - в конце производства на конвейере может
-                // остаться меньше болванок, чем он собирался отнести, и он должен будет отчитаться об этом:
+                // поле, чтобы проверить, сколько болванок в этом цикле while (workingDay) отнесет Грузчик - в конце
+                // производства на конвейере может остаться меньше болванок, чем он собирался отнести, и он должен будет
+                // отчитаться об этом:
                 int shippedOnStorageThisTime = 0;
-                // просыпаясь, грузчик берет болванки с конвейера в порядке от первой к последней, чтобы отнести их
-                // на склад:
+                // Просыпаясь, Грузчик берет болванки с конвейера в порядке от первой к последней, чтобы отнести их
+                // на склад. Он захватывает доступ на склад с помощью семафора (если Кладовщик не успел еще сделать
+                // этого, но Кладовщик сможет это сделать только после того, как Грузчик поднимет флажок - даже если
+                // Кладовщик запустится раньше Грузчика - а флажок пока опущен). Метод acquire() означает, что все,
+                // что под ним и до release(), будет выполняться, пока верно поставленное там условие, а если уже нет -
+                // ресурсы освобождаются для других потоков.
+                semaphore.acquire(); // (acquire() бросает InterruptedException, но мы уже внутри блока try,
+                // который его отлавливает)
                 while (!conveyor.isEmpty()) {
                     // Считаем, сколько предметов он берет с конвейера:
                     ++shippedOnStorageThisTime;
-                    // Грузчик захватывает доступ на склад (если Кладовщик не успел еще сделать этого, но Кладовщик
-                    // будет запущен позже):
-                    semaphore.acquire(); // (acquire() бросает InterruptedException, но мы уже внутри блока try,
-                    // который его отлавливает)
-                    // и загружает туда то, что он берет с конвейера:
+//                    semaphore.acquire();
+                    // Грузчик загружает на склад то, что он берет с конвейера:
                     stock.offer(conveyor.pop());
-                    // а потом освобождает доступ на склад:
-                    semaphore.release();
+//                    semaphore.release();
                 }
+                // После загрузки всего содержимого конвейера на склад он освобождает доступ на склад:
+                semaphore.release();
                 // и поднимает флажок как знак Кладовщику, что он что-то принес:
                 stockRefilled = true;
                 // затем выбирает, сколько болванок нести в следующий раз:
@@ -268,34 +278,45 @@ public class MyWaitNotifyManufacturing {
     };
 
     public Runnable stockman = () -> { // это Кладовщик
+        // Что нужно Кладовщику?:
+        int index = 1; // (счетчик бутылок в мусорке)
+        Object temp = new Object(); // (неизвестный пока объект, извлеченный Кладовщиком со склада)
         Thread.currentThread().setName("Stockman");
         // locker использовался Рабочим и Грузчиком для проверки занятости конвейера, но здесь Кладовщик использует его,
-        // чтобы поспать, пока в конце рабочего дня не нужно будет записать wholeTimeToManufacturing
+        // чтобы поспать, пока в конце рабочего дня не нужно будет записать wholeTimeToManufacturing и прочее:
         locker.lock();
         try {
             while (workingDay) {
                 condition.await();
 
-                // Но вот во сне Кладовщик замечает поднятый Грузчиком флажок и проверяет, свободен ли доступ на склад:
-                if (stockRefilled) {
-                    // И если свободен, захватывает общий реурс (склад) в следующем участке кода:
+                // Но вот во сне Кладовщик замечает поднятый Грузчиком флажок:
+                while (stockRefilled) {
+                    // и проверяет, свободен ли доступ на склад. И если свободен, захватывает общий реурс (склад)
+                    // в следующем за acquire() участке кода:
                     semaphore.acquire(); // acquire() throws InterruptedException, но оно уже отловлено здесь
                     // перебирает и проверяет то, что принес Грузчик: болванки оставляет, бутылки - в мусорку:
-                    Object temp = new Object(); // (неизвестный пока объект, извлеченный Кладовщиком со склада)
-                    int index = 1; // (счетчик бутылок в мусорке)
+//                    Iterator<Object> iterator = stock.iterator();
                     while (!stock.isEmpty()) {
-                        temp = stock.peek(); // (перебирает с головы, с первого элемента, принесенного Грузчиком).
+//                    for (Object temp : stock)
+//                        temp = stock.peek();
+                        temp = stock.poll(); // (перебирает с головы, с первого элемента, принесенного Грузчиком).
                         if (temp.getClass().equals(String.class)) {
                             trashBin.put(index, "бутылка" + (String) temp);
-                            stock.remove();
+//                            stock.remove();
+                        } else if (temp.getClass().equals(Integer.class)) {
+                            shelf.add(temp);
                         }
                     }
                     // Кладовщик проверяет, достаточно ли болванок осталось на складе после чистки того, что принес
                     // Грузчик, и если да, то дает доступ к складу одной из ожидающих машин (какая первой окажется рядом)
                     synchronized (stockMonitor) {
-                    if (stock.size() >= 5)
-                    System.out.println(stock.peekLast());
+                        if (shelf.size() >= 5) {
+//                            wait();
+                        }
+//                        notify();
                     }
+                    if (shelf.size() != 0)
+                        System.out.println(shelf.get(shelf.size() - 1));
                     // и затем опускает флажок на складе:
                     stockRefilled = false;
                     // и освобождает доступ на склад:
