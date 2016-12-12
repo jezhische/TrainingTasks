@@ -1,10 +1,8 @@
 package threadClass.waitNotify.myWaitNotifyManufacturing;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -48,20 +46,20 @@ public class MyWaitNotifyManufacturing {
     /**
      * конвейер, на который Рабочий складывает произведенные болванки и бутылки, и откуда Грузчик их забирает:
      */
-    public static ConcurrentLinkedDeque conveyor = new ConcurrentLinkedDeque(); // это хранилище не обязано быть
+    private static ConcurrentLinkedDeque conveyor = new ConcurrentLinkedDeque(); // это хранилище не обязано быть
     // из пакета concurrent, поскольку к нему обращаются только 2 потока и строго по очереди, через объект Lock.
     /**
      * склад с болванками, из которых еще нужно выбрать бутылки:
      */
-    public LinkedList stock = new LinkedList();
+    private LinkedList stock = new LinkedList();
     /**
      * специальный мусорный бак для бутылок:
      */
-    public Map<Integer, String> trashBin = new HashMap<>();
+    private Map<Integer, String> trashBin = new HashMap<>();
     /**
      * продолжается или закончено производство
      */
-    private static boolean workingDay;
+    private volatile static boolean workingDay;
     /**
      * блокиратор для работы с конвейером:
      */
@@ -81,11 +79,24 @@ public class MyWaitNotifyManufacturing {
     /**
      * Объект для синхронизации действий Кладовщика и Грузовиков на складе:
      */
-    public static final Object stockMonitor = new Object();
+    private static final Object stockMonitor = new Object();
     /**
-     * Полка, на которую Кладовщик будет откладывать отсортированные болванки, в которых он уверен:
+     * Полка, на которую Кладовщик будет откладывать отсортированные болванки, в которых он уверен.
+     * NB! Когда Кладовщик загрузил полку и открывает к ней доступ, за груз на ней начинают бороться сразу
+     * 4 Грузовика, так что здесь следует принять меры по потокобезопасной работе со списком, например, так:
      */
-    private List<Object> shelf = new ArrayList<>();
+    private CopyOnWriteArrayList<Object> shelf = new CopyOnWriteArrayList<>();
+    // Хотя в данном случае в этом нет нужды - здесь в коде доступ к полке синхронизирован через wait/notify,
+    // так что работает и так:
+    // private ArrayList<Object> shelf = new ArrayList<>(); //TODO: попробовать воспользоваться CopyOnWriteArrayList
+    // без синхронизации - по идее, должно сработать
+    /**
+     * Количество отправленных грузовиков - на всякий случай Atomic, поскольку будет осуществляться инкрементация
+     * этого поля в разных потоках:
+     */
+    private AtomicInteger sentTrucksNumber;
+
+// _______________________________________________________________________________________________________________
 
     public MyWaitNotifyManufacturing() {
         // при создании объекта класса в конструкторе сразу создаем блокиратор и условие для него - этот блокиратор
@@ -103,6 +114,8 @@ public class MyWaitNotifyManufacturing {
         workingDay = true;
         // пока что еще не потрачено ни миллисекунды на производство:
         wholeTimeToManufacturing = 0;
+        // и пока не отправлено ни одного грузовика:
+        sentTrucksNumber = new AtomicInteger(0);
     }
 
     public static void main(String[] args) {
@@ -112,15 +125,17 @@ public class MyWaitNotifyManufacturing {
 //        //  класса: MyWaitNotifyManufacturing.Worker worker = manufacturing.new Worker();
 // ----------------------------------------------------------------------------------------------------
         // Для Runnable, кажется, без разницы, как запускать потоки, например:
-        ExecutorService ex = Executors.newFixedThreadPool(4);
+        ExecutorService ex = Executors.newFixedThreadPool(7);
         // Рабочий запущен:
         ex.submit(manufacturing.worker); // для Runnable не знаю, в чем разница между submit и execute
         // Грузчик запущен:
         ex.execute(manufacturing.loader);
         // Кладовщик запущен:
         ex.execute(manufacturing.stockman);
-
-        ex.execute(manufacturing.truck);
+        // Запускаем 4 Грузовика:
+        for (int i = 0; i < 4; i++) {
+            ex.execute(manufacturing.truck);
+        }
         // По окончании работы, всех закрываем:
         ex.shutdown();
 // ----------------------------------------------------------------------------------------------------
@@ -132,8 +147,9 @@ public class MyWaitNotifyManufacturing {
 //        loaderLoad.start();
 //        stockmanHandles.start();
 // ---------------------------------------------------------------------------------------------------------
+//         // джойны - они нужны, если в main еще что-то должно быть выполнено после запуска потоков.
 //        try {
-//            workerWorks.join(); // джойны нужны, если в main еще что-то должно быть выполнено после запуска потоков.
+//            workerWorks.join();
 //            loaderLoad.join();
 //            stockmanHandles.join();
 //        } catch (InterruptedException e) {
@@ -150,6 +166,17 @@ public class MyWaitNotifyManufacturing {
 //                System.out.printf("BOTTLE%s, ", bar);
 //        }
     }
+// ______________________________________________________________________________________________________________
+
+    // Здесь использованы лямбды как заменители анонимного класса. Я решил не выносить создание потоков в отдельные
+    // классы, использовал внутренние анонимные вида:
+//    Runnable worker = new Runnable() {
+//        @Override
+//        public void run() {
+//
+//        }
+//    };
+    // а они легко заменяются лямбдами.
 
     public Runnable worker = () -> { // это Рабочий
         // Что нужно Рабочему для работы?
@@ -162,14 +189,16 @@ public class MyWaitNotifyManufacturing {
         boolean bottleInsteadOfBar = randomizer.nextInt(3) == 2;
         // Имя:
         Thread.currentThread().setName("Worker");
-        System.out.printf("Рабочий %s запущен!\n", Thread.currentThread().getName());
+        System.out.printf("Рабочий %s приступил к работе!\n", Thread.currentThread().getName());
+        // Рабочий работает, пока рабочий день не закончен:
         while (workingDay) {
             try {
-                Thread.sleep(timeToSleep); // sleep() is static. Java docs: "Thread.sleep causes the current thread
-                // to suspend execution for a specified period." (https://docs.oracle.com/javase/tutorial/essential/concurrency/sleep.html)
-                // so no need to write Thread.currentThread().sleep(...);
-                // Замеряем время работы для того, чтобы Кладовщик по окончании рабочего дня взял эти данные:
-                wholeTimeToManufacturing += timeToSleep;
+                    Thread.sleep(timeToSleep); // sleep() is static. Quote from Java docs: "Thread.sleep causes
+                    // the current thread to suspend execution for a specified period."
+                    // (https://docs.oracle.com/javase/tutorial/essential/concurrency/sleep.html), so no need
+                    // to write Thread.currentThread().sleep(...);
+                    // Замеряем время работы для того, чтобы Кладовщик по окончании рабочего дня взял эти данные:
+                    wholeTimeToManufacturing += timeToSleep;
                 // Рабочий блокирует для себя конвейер - это нечто вроде заменителя блока synchronized,
                 // заканчивается на unlock():
                 locker.lock();
@@ -180,9 +209,29 @@ public class MyWaitNotifyManufacturing {
                     // количества, доступ Рабочему к фрагменту кода между condition.await() и locker.unlock() закрыт.
                     condition.await();
                 }
-                // А вот если предыдущее условие ложно, дальнейший код выполняется:
+
+//===============================================
+                // Первым делом - условие окончания цикла. Грузовики проверяют склад на наличие нужного количества
+                // болванок на полке сразу после того, как Кладовщик объявляет notify на полку - т.е. отпустит полку из
+                // своей блокировки. В это время Рабочий находится внутри цикла while(workingDay), но спит,
+                // блокированный замком locker.lock() (он передал Грузчику доступ к конвейеру через этот замок
+                // несколькими строчками выше, когда сделал достаточное количество деталей:
+                // conveyor.size() >= countOfBarsToSendToStorage   - и пока что спит). Но в это время Грузчик успел
+                // отнести на склад все предметы с конвейера, так что для него теперь выполняется его собственное
+                // условие блокировки conveyor.size() < countOfBarsToSendToStorage, и он также спит под этим локом
+                // locker.lock(). Если сейчас Рабочий просто выскочит из цикла while(workingDay) через break, то Грузчик
+                // по-прежнему будет заблокирован, и программа повиснет.
+                // Поэтому снимаем блокировку с Грузчика через condition.signalAll() и выводим Рабочего из цикла
+                // while(workingDay) через break:
+                if(!workingDay) {
+                    condition.signalAll();
+                    break;
+                }
+//===============================================
+                // А вот если предыдущее условие conveyor.size() >= countOfBarsToSendToStorage ложно,
+                // дальнейший код выполняется:
                 if (!bottleInsteadOfBar) {
-                    Thread.sleep(50);
+                        Thread.sleep(50);
                     wholeTimeToManufacturing += 50;
                     // Рабочий кладет на конвейер болванку:
                     conveyor.offer(currentBarNumber); // добавление в конец очереди
@@ -212,30 +261,27 @@ public class MyWaitNotifyManufacturing {
             timeToSleep = randomizer.nextInt(500);
             // положит ли он в следующий раз болванку или бутылку:
             bottleInsteadOfBar = randomizer.nextInt(3) == 2;
-            if (currentBarNumber == 21) {
-                workingDay = false;
-            }
         }
         System.out.printf("Рабочий %s остановлен!\n", Thread.currentThread().getName());
     };
+// ______________________________________________________________________________________________________
 
     public Runnable loader = () -> { // это Грузчик
         // Что нужно Грузчику?:
-
-        Thread.currentThread().setName("Loader");
-        System.out.printf("Грузчик %s собирается отнести на склад охапку из %d болванок и пока пошел спать.\n",
-                Thread.currentThread().getName(), countOfBarsToSendToStorage);
+        // а почти ничего собственного-локального, кроме имени и рандомайзера - он аскет:
         Random randomizer = new Random();
+        Thread.currentThread().setName("Loader");
+        System.out.printf("Грузчик %s приступил к работе!\n", Thread.currentThread().getName());
+        System.out.printf("Грузчик %s собирается отнести на склад охапку из %d предметов и пока пошел спать.\n",
+                Thread.currentThread().getName(), countOfBarsToSendToStorage);
         while (workingDay) {
-            locker.lock();
+            locker.lock(); // (- отсюда начинается область действия блокировки конвейера)
             try {
                 // Пока на конвейере нет нужного количества болванок и рабочий день еще не закончен, Грузчик спит:
                 while (conveyor.size() < countOfBarsToSendToStorage && workingDay) {
                     condition.await();
                 }
-                // поле, чтобы проверить, сколько болванок в этом цикле while (workingDay) отнесет Грузчик - в конце
-                // производства на конвейере может остаться меньше болванок, чем он собирался отнести, и он должен будет
-                // отчитаться об этом:
+                // поле, чтобы проверить, сколько болванок в этом цикле while (workingDay) отнесет Грузчик:
                 int shippedOnStorageThisTime = 0;
                 // Просыпаясь, Грузчик берет болванки с конвейера в порядке от первой к последней, чтобы отнести их
                 // на склад. Он захватывает доступ на склад с помощью семафора (если Кладовщик не успел еще сделать
@@ -248,10 +294,8 @@ public class MyWaitNotifyManufacturing {
                 while (!conveyor.isEmpty()) {
                     // Считаем, сколько предметов он берет с конвейера:
                     ++shippedOnStorageThisTime;
-//                    semaphore.acquire();
                     // Грузчик загружает на склад то, что он берет с конвейера:
                     stock.offer(conveyor.pop());
-//                    semaphore.release();
                 }
                 // После загрузки всего содержимого конвейера на склад он освобождает доступ на склад:
                 semaphore.release();
@@ -264,12 +308,10 @@ public class MyWaitNotifyManufacturing {
                 condition.signalAll();
                 if (workingDay)
                     System.out.printf("Грузчик %s отнес на склад %d предметов с конвейера, решил, что в следующий раз " +
-                                    "отнесет %d болванок, и пошел спать.\n", Thread.currentThread().getName(),
+                                    "отнесет охапку из %d предметов, и пошел спать.\n", Thread.currentThread().getName(),
                             shippedOnStorageThisTime, countOfBarsToSendToStorage);
                 else
-                    System.out.printf("Рабочий день заканчивается, Грузчику пришлось проснуться, проверить конвейер и " +
-                                    "отнести на склад последние %d болванки.\nГрузчик %s идет досыпать домой!\n",
-                            shippedOnStorageThisTime, Thread.currentThread().getName());
+                    System.out.printf("Грузчик %s идет досыпать домой!\n", Thread.currentThread().getName());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 e.printStackTrace();
@@ -278,75 +320,113 @@ public class MyWaitNotifyManufacturing {
             }
         }
     };
+//_______________________________________________________________________________________________________________
 
     public Runnable stockman = () -> { // это Кладовщик
         // Что нужно Кладовщику?:
         int index = 1; // (счетчик бутылок в мусорке)
         Object temp = new Object(); // (неизвестный пока объект, извлеченный Кладовщиком со склада)
         Thread.currentThread().setName("Stockman");
+        System.out.printf("Кладовщик %s приступил к работе!\n", Thread.currentThread().getName());
         // locker использовался Рабочим и Грузчиком для проверки занятости конвейера, но здесь Кладовщик использует его,
         // чтобы поспать, пока в конце рабочего дня не нужно будет записать wholeTimeToManufacturing и прочее:
         locker.lock();
         try {
             while (workingDay) {
                 condition.await();
-
                 // Но вот во сне Кладовщик замечает поднятый Грузчиком флажок:
                 while (stockRefilled) {
                     // и проверяет, свободен ли доступ на склад. И если свободен, захватывает общий реурс (склад)
                     // в следующем за acquire() участке кода:
                     semaphore.acquire(); // acquire() throws InterruptedException, но оно уже отловлено здесь
                     // перебирает и проверяет то, что принес Грузчик: болванки оставляет, бутылки - в мусорку:
-//                    Iterator<Object> iterator = stock.iterator();
                     while (!stock.isEmpty()) {
-//                    for (Object temp : stock)
-//                        temp = stock.peek();
                         temp = stock.poll(); // (перебирает с головы, с первого элемента, принесенного Грузчиком).
                         if (temp.getClass().equals(String.class)) {
-                            trashBin.put(index, "бутылка" + (String) temp);
-//                            stock.remove();
+                            trashBin.put(index, "бутылка" + temp); // хотя temp - это Object, но здесь автоматически
+                            // применяется toString, так что нет нужды делать приведение (String)temp.
+                            index++;
                         } else if (temp.getClass().equals(Integer.class)) {
                             shelf.add(temp);
-                            System.out.println(shelf);
                         }
                     }
+                    System.out.println("map size = " + trashBin.size());
                     if (shelf.size() != 0)
-                        System.out.println(shelf.get(shelf.size() - 1));
+                        System.out.println("После добавления на полке лежат болванки: " + shelf);
                     // и затем опускает флажок на складе:
                     stockRefilled = false;
                     // и освобождает доступ на склад:
                     semaphore.release();
                 }
-                // Кладовщик проверяет, достаточно ли болванок осталось на складе после чистки того, что принес
-                // Грузчик, и если да, то дает доступ к складу одной из ожидающих машин (какая первой окажется рядом)
-//                synchronized (shelf) {
-//                    if (shelf.size() >= 5) {
-//                        wait();
-//                    }
-//                        notify();
-//                }
+                // Кладовщик проверяет, достаточно ли болванок осталось на полке после чистки того, что принес на склад
+                // Грузчик, и если да, то дает доступ к полке одной из ожидающих машин (какая первой окажется рядом),
+                // а сам впадает в транс, пока Грузовики не освободят полку и не объявят, что болванок на полке меньше
+                // пяти и можно класть еще:
+                synchronized (stockMonitor) {
+                    if (shelf.size() >= 5) {
+                        stockMonitor.notifyAll();
+                        stockMonitor.wait();
+                    }
+                }
+                // К тому времени, как Грузовики разрешат Кладовщику выйти из транса, может оказаться, что очередной
+                // Грузовик просигнализировал, что он был 4-ым, и рабочий день окончен. В этом случае Кладовщик выйдет
+                // из данного цикла while(workingDay) и перейдет к подсчетам и окончанию своей работы.
             }
-            System.out.println("wholeTimeToManufacturing = " + wholeTimeToManufacturing);
-            condition.signalAll();
+            // Кладовщик выскочил из цикла рабочего дня и может записать все, что должен:
+            System.out.println("На полке склада осталось " + shelf.size() + " болванок с порядковыми номерами " + shelf);
+            System.out.printf("Всего было сделано %d полноценных болванок. \nВ мусорку отправлены следующие объекты, " +
+                    "найденные на конвейере под видом болванок:\n", shelf.size() + 20);
+            for (Map.Entry<Integer, String> item : trashBin.entrySet())
+                System.out.print(item.getValue() + ", ");
+            System.out.printf("\nВсего в мусорку выкинуто %d бутылок.\n", trashBin.size());
+            System.out.println("Затрачено на производство: wholeTimeToManufacturing = " + wholeTimeToManufacturing
+            + "\nКладовщик запер склад и отправился домой!");
+            // Что интересно, в следующей записи уже нет нужды, поскольку все общие ресурсы уже использованы
+            // заинтересованными сторонами:
+//            condition.signalAll();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
             locker.unlock();
         }
     };
+//____________________________________________________________________________________________________________
 
     public Runnable truck = () -> { // это Грузовики
-        synchronized (shelf) {
-                    if (shelf.size() < 5) {
-//                        try {
-//                            wait();
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-                    }
-//            System.out.println("Грузовик " + shelf);
-//                        notify();
+        System.out.printf("Грузовик %s подъехал!\n", Thread.currentThread().getName());
+        // Пока деталей на полке склада недостаточно, Грузовик ждет:
+        synchronized (stockMonitor) {
+            while (shelf.size() < 5) {
+                try {
+                    stockMonitor.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-        System.out.println("Грузовик " + shelf);
+            }
+            // А как только деталей стало достаточно (притом деталей может быть и 10 - на два Грузовика!), Грузовик
+            // увозит 5 болванок:
+            if (shelf.size() >= 5) {
+                System.out.println(" Truck" + Thread.currentThread().getName() + ": enough number of bars!");
+                for (int i = 0; i < 5; i++) {
+                    shelf.remove(0); // NB: при каждом проходе цикла длина списка уменьшается на 1, соответственно
+                    // сдвигаются индексы элементов, так что запись shelf.remove(i) через несколько проходов цикла
+                    // вызовет ArrayIndexOutOfBoundsException
+                }
+            }
+            // Грузовик заявляет о том, что он уехал, увеличивапя счетчик отправленных грузовиков:
+            sentTrucksNumber.incrementAndGet();
+            //================================================
+            // и проверяет: если он был уже 4-ым, тогда он объявляет, что рабочий день окончен:
+            if (sentTrucksNumber.get() == 4) {
+                workingDay = false;
+                System.out.println("Последний Грузовик был загружен и уехал!");
+            }
+            //=====================================================
+            System.out.println("Грузовик " + Thread.currentThread().getName() + " забрал 5 болванок. На полке " +
+                    "остались болванки с номерами: " + shelf);
+            // И потом он освобождает доступ к полке:
+            stockMonitor.notifyAll();
+        }
+
     };
 }
