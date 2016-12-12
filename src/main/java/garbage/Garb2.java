@@ -1,4 +1,4 @@
-package garbage.modifierProbe;
+package garbage;
 
 /**
  * Created by WORK on 02.12.2016.
