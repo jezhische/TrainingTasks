@@ -36,5 +36,9 @@ public class RemoveAll {
         System.out.println("arrlist.retainAll(retainlist) = " + arrlist.retainAll(retainlist));
         System.out.println("arrlist.retainAll(retainlist) = " + arrlist.retainAll(retainlist));
         System.out.println("arrlist " + arrlist);
+
+        arrlist.toArray(ii);
+        for (Integer i: ii)
+            System.out.print(i + ", ");
     }
 }
