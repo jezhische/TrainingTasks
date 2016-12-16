@@ -23,5 +23,7 @@ public class ArraysAsList {
 //        Character[] str = {'f', 'd', 'f', 'g'};  // не получается copyOf
 //        List<Character> copyList = Arrays.copyOf(str, 4);
         System.out.println(intList);
+        Set<Integer> intSet = new HashSet<>(intList);
+        System.out.println(intSet);
     }
 }
