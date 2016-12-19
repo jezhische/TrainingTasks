@@ -1,9 +1,6 @@
 package collectionsAndMaps.collection;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Ежище on 16.12.2016.
@@ -25,5 +22,13 @@ public class ArraysAsList {
         System.out.println(intList);
         Set<Integer> intSet = new HashSet<>(intList);
         System.out.println(intSet);
+
+        ArrayList<Integer> a2 = new ArrayList<>(intList);
+        System.out.println("a2 = " + a2);
+
+        ArrayList<Integer> al = new ArrayList<>();
+        for (int i = 0; i < arr.length; i++)
+            al.add(arr[i]);
+        System.out.println("al = " + al);
     }
 }

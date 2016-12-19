@@ -47,5 +47,8 @@ public class IteratorRemoveProbe {
 
 
         System.out.println(linkedList);
+
+
+
     }
 }
