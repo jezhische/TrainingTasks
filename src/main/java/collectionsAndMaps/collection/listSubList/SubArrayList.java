@@ -1,9 +1,9 @@
-package listSubList;
+package collectionsAndMaps.collection.listSubList;
 
-import sort.bubble.BubbleSortFull;
 import swing._2Danimation.auxiliary.BubbleSort;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -48,5 +48,12 @@ public class SubArrayList {
 
     public static void main(String[] args) {
         new SubArrayList().printArrayList(25);
+
+        List<String> stringList = new ArrayList<String>( Arrays.asList( "2", "1", "2", "4", "3", "5") );
+        stringList.subList(0, 5).clear(); //TODO: ЭЛЕМЕНТ С КОНЕЧНЫМ ИНДЕКСОМ НЕ ВКЛЮЧАЕТСЯ в subList
+        System.out.println();
+        for( String entry : stringList ){
+            System.out.print( entry );
+        }
     }
 }
