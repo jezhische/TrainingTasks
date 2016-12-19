@@ -8,6 +8,9 @@ public class CarDriver extends BasicDriver {
         super(back, forward);
         this.driveType = driveType;
     }
+    public CarDriver() {
+        this(5, 2, "I drive car");
+    }
     @Override
     public int drive() {
         return super.drive();
