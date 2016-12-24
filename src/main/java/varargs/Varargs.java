@@ -30,6 +30,6 @@ public class Varargs {
     }
 
     public static void main(String... args) {
-        System.out.println("Varargs these are maybe \"variable arguments\", that is Arbitrary Number of Arguments");
+        System.out.println("Varargs these are \"variable-length arguments\", that is Arbitrary Number of Arguments");
     }
 }

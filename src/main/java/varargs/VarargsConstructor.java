@@ -18,7 +18,7 @@ public class VarargsConstructor {
         for (int i = 0; i < par.length; i++)
             parList.add(i, par[i]);
     }
-    VarargsConstructor(String... ddd) {
+    VarargsConstructor(String... ddd) { // имя аргументов ddd м.б. любое, в т.ч. и то же самое: par
         parList = new ArrayList();
         for (int i = 0; i < ddd.length; i++)
             parList.add(i, ddd[i]);
