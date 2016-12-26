@@ -6,6 +6,7 @@ package objectMethods;
 public class CloneMethodOverride implements Cloneable {
     Integer i;
 
+    @Override
     public CloneMethodOverride clone() throws CloneNotSupportedException {
         CloneMethodOverride clo = (CloneMethodOverride) super.clone();
         clo.i = i;
