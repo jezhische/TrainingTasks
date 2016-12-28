@@ -1,4 +1,4 @@
-package garbage;
+package garbage.trash;
 
 /**
  * Created by WORK on 02.12.2016.

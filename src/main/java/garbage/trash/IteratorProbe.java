@@ -1,4 +1,4 @@
-package garbage;
+package garbage.trash;
 
 import java.util.*;
 

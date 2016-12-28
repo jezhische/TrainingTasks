@@ -1,4 +1,4 @@
-package garbage;
+package garbage.trash;
 
 /**
  * Created by Ежище on 06.12.2016.
