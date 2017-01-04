@@ -24,6 +24,7 @@ public class ListRawList {
         l.rawList2.add("mkm");
         System.out.println(l.list2.get(1));
 //        System.out.println(l.list2.get(0)); // а вот тут будет ClassCastException: лежит Integer вместо String.
+        // это исключение происходит не при компиляции, а в runtime!
 
         l.rawList1.add(5);
         l.rawList1.add("mkm");
