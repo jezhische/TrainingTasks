@@ -1,4 +1,4 @@
-package collectionsAndMaps;
+package collectionsAndMaps.set;
 
 import java.util.TreeSet;
 

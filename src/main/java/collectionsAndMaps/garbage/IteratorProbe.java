@@ -1,4 +1,4 @@
-package garbage.trash;
+package collectionsAndMaps.garbage;
 
 import java.util.*;
 

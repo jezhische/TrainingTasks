@@ -10,6 +10,20 @@ public class EqualsMethod {
         return obj1.equals(obj2);
     }
 
+    // пример переопределения equals():
+    private class Oyuu {
+        int x;
+        Oyuu (int x) {
+            this.x = x;
+        }
+        @Override
+        public boolean equals (Object object) {
+            if (object instanceof Oyuu)
+                return x == ((Oyuu) object).x;
+            return super.equals (object);
+        }
+    }
+
     public static void main(String[] args) {
         Point p1=new Point(2,3);
         Point p2=new Point(2,3);
