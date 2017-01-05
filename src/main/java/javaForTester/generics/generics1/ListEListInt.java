@@ -18,7 +18,7 @@ public class ListEListInt <T> {
             System.out.println(integer);
         System.out.println("<Integer> test was running");
     }
-// в общем, то, что написано ниже - брехня. На самом деле если мы создаем образец класса как "сырой" тип, то получаем
+// ????? На самом деле (?????), если мы создаем образец класса как "сырой" тип, то получаем
     // test (Collection<E> collection) и (List<Integer> listInteger) (возможно, неопределенные дженерики все-таки
 // стираются, и тут test (Collection collection)). При выборе между перегруженными методами выбирается тот, где в
 // аргументе коллекция с ОБЪЕКТАМИ НУЖНОГО ТИПА, но поскольку такой нет - выбирается наиболее близкий тип коллекции,
@@ -35,6 +35,10 @@ public class ListEListInt <T> {
 
         ListEListInt <String> leStr = new ListEListInt<>();
         leStr.test(list); // а вот это - сработает, поскольку указан тип в классе ListEListInt <String>
+
+        ListEListInt <?> query = new ListEListInt<>();
+        query.test(list); // блин, и почему? Получается, как только образец класса типизирован, все дженерики сразу
+        // стали работать?
     }
 
 }
