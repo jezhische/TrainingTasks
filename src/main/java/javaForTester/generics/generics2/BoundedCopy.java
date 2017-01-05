@@ -37,12 +37,3 @@ public class BoundedCopy {
 //        copy(cameras, phones); // хо-хо! телефоны не залазят!
     }
 }
-
-class Product {
-}
-
-class Camera extends Product {
-}
-
-class Phone extends Product {
-}
