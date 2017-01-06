@@ -3,9 +3,10 @@ package javaForTester.generics.generics3;
 /**
  * Created by WORK_x64 on 05.01.2017.
  */
-public abstract class Product implements Comparable <javaForTester.generics.generics3.Product>{
-    private double price;
-    private String s;
+public abstract class Product <T extends Product<T>> implements Comparable <T>{
+    // - это РЕКУРСИВНОЕ расширение типа
+    double price;
+    String s;
     @Override
     public int compareTo(Product o) {
         if (price < o.price)
@@ -14,8 +15,19 @@ public abstract class Product implements Comparable <javaForTester.generics.gene
             return 1;
         return 0;
     }
+    // возможный вариант:
+//    @Override
+//    public int compareTo(T o) {
+//        Product oo = o;
+//        if (price < ((Product)o).price)
+//            return -1;
+//        if (price > oo.price)
+//            return 1;
+//        return 0;
+//    } - но в этом случае уже нельзя будет в наследниках сравнить камеру с телефоном по цене
 
-    abstract void subCompare(Product p);
+    public abstract boolean subCompare(T p); // - а вот здесь можно будет сравнить только камеру с камерой
+    // или телефон с телефоном
 
 
 
@@ -41,7 +53,7 @@ public abstract class Product implements Comparable <javaForTester.generics.gene
         return getClass().getSimpleName();
     }
 
-    // main применим, если убрать абстрактный метод и абстрактный класс subCompare(Product p)
+    // main применим, если убрать абстрактный метод subCompare(Product p) и абстрактный класс
     public static void main(String[] args) {
 //        Product a = new Product();
 //        Product b = new Product();
