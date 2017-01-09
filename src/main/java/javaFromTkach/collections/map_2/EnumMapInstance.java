@@ -1,12 +1,15 @@
 package javaFromTkach.collections.map_2;
 
+import garbage.trash.enumProbes.Unit;
+
 import java.io.PrintStream;
+import java.util.EnumMap;
 
 /**
  * Created by Ежище on 08.01.2017.
  */
 public class EnumMapInstance {
-    // ключи - элементы enum, а значения хранятся в массиве.
+    // ключи - элементы enumProbes, а значения хранятся в массиве.
     enum Mapable {
         KILOMETER, METER,  // объекты класса Mapable, доступные статически, фактически синглтоны
         // - это объекты, образованные с помощью пустого конструктора по умолчанию, фактически KILOMETER() или, более
@@ -21,7 +24,7 @@ public class EnumMapInstance {
         double length;
         simpleUnit (double length) {this.length = length;}
     }
-//    simpleUnit si = new simpleUnit(); // Enum types cannot be instantiated  - т.е. получить образец класса enum или
+//    simpleUnit si = new simpleUnit(); // Enum types cannot be instantiated  - т.е. получить образец класса enumProbes или
 //     //его потомка simpleUnit напрямую невозможно, можно только воспользоваться готовыми образцами, уже созданными в
 //     //классе.
     public static void printAll (PrintStream out) {
@@ -38,6 +41,9 @@ public class EnumMapInstance {
         MILLIMETER {public double getLength() {return 1e-3;}};
         abstract double getLength();
     }
+
+    EnumMap<Unit, String> stringEnumMap = new EnumMap<>(Unit.class);
+
 
     public static void main(String[] args) {
         System.out.println(Mapable.class.getSuperclass());
