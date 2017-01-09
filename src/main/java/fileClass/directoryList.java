@@ -7,7 +7,7 @@ import java.io.File;
  */
 public class directoryList {
     public static void main(String[] args) {
-        File dir = new File("src\\main\\java\\javaForTester");
+        File dir = new File("src\\main\\java\\javaFromTkach");
         if (dir.isDirectory()) {
             for (File item: dir.listFiles()) {
                 if (item.isDirectory()) {
