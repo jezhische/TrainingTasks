@@ -4,6 +4,10 @@ import garbage.trash.enumProbes.Unit;
 
 import java.io.PrintStream;
 import java.util.EnumMap;
+import java.util.Map;
+import java.util.Set;
+
+import static javaFromTkach.collections.map_2.EnumMapInstance.Unit.*;
 
 /**
  * Created by Ежище on 08.01.2017.
@@ -42,19 +46,41 @@ public class EnumMapInstance {
         abstract double getLength();
     }
 
-    EnumMap<Unit, String> stringEnumMap = new EnumMap<>(Unit.class);
+    static EnumMap<Unit, String> stringEnumMap = new EnumMap<>(Unit.class);
 
 
     public static void main(String[] args) {
-        System.out.println(Mapable.class.getSuperclass());
-        double a = 1e-3;System.out.println(a);
-        System.out.print(Mapable.KILOMETER + "; ");
-        System.out.println(Mapable.KILOMETER.getClass());
-        System.out.println(Unit.class + ":::" + Unit.class.getSuperclass() + ":::" + Unit.KILOMETER.getClass() +
-        "\n:::" + Unit.KILOMETER.getClass().getSuperclass() + ":::" + Unit.KILOMETER.getClass().getSuperclass().
-                getSuperclass());
-        System.out.println(simpleUnit.KILOMETER.length);
+//        System.out.println(Mapable.class.getSuperclass());
+//        double a = 1e-3;System.out.println(a);
+//        System.out.print(Mapable.KILOMETER + "; ");
+//        System.out.println(Mapable.KILOMETER.getClass());
+//        System.out.println(Unit.class + ":::" + Unit.class.getSuperclass() + ":::" + Unit.KILOMETER.getClass() +
+//        "\n:::" + Unit.KILOMETER.getClass().getSuperclass() + ":::" + Unit.KILOMETER.getClass().getSuperclass().
+//                getSuperclass());
+//        System.out.println(simpleUnit.KILOMETER.length);
+//
+//        printAll(System.out);
 
-        printAll(System.out);
+        stringEnumMap.put(Unit.values()[0], METER.toString()); // короткая запись благодаря тому, что я сделал
+        // import static javaFromTkach.collections.map_2.EnumMapInstance.Unit.*;
+        System.out.println("stringEnumMap.containsKey(METER): " + stringEnumMap.containsKey(METER));
+        System.out.println("stringEnumMap: " + stringEnumMap);
+        System.out.println("stringEnumMap.get(Unit.values()[0]): " + stringEnumMap.get(Unit.values()[0]));
+        System.out.println("stringEnumMap.get(Unit.values()[1]): " + stringEnumMap.get(Unit.values()[1]));
+
+        System.out.println();
+        Set<Map.Entry<Unit, String>> entries = stringEnumMap.entrySet();
+        for (Map.Entry<Unit, String> entry: entries) {
+            System.out.println(String.format("key = %s, value = %s", entry.getKey(), entry.getValue()));
+            entry.setValue("shifted");
+            System.out.println(String.format("key = %s, value = %s", entry.getKey(), entry.getValue()));
+        }
+
+        stringEnumMap.put(Unit.values()[2], MILLIMETER.toString());
+        System.out.println();
+        for (Map.Entry<Unit, String> entry: entries) {
+            System.out.println(String.format("key = %s, value = %s", entry.getKey(), entry.getValue()));
+        }
+
     }
 }
