@@ -1,4 +1,4 @@
-package objectMethods;
+package objectMethods.cloneable;
 
 /**
  * Created by Ежище on 26.12.2016.

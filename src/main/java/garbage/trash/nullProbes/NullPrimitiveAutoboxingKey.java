@@ -12,10 +12,13 @@ public class NullPrimitiveAutoboxingKey {
         Map numberAndCount = new HashMap<>();
         int[] numbers = {3, 5, 7,9, 11, 13, 17, 19, 2, 3, 5, 33, 12, 5};
         for(int i : numbers){
-            int count = (int)numberAndCount.get(i); // NullPointerException here
-//            int count = numbers[i];
-//            int count = 0;
+            int count = (Integer)numberAndCount.get(i); // NullPointerException here ((NullPrimitiveAutoboxingKey))
+            // -  здесь идет обращение к i-ой корзине мапы, которая пока что содержит null,
+            // который может быть приведен к Integer, но не к int
             System.out.println(numberAndCount.put(i, count++));
+            // вот еще пример:
+            Integer a = null;
+            int b = a; // NullPointerException here (NullPrimitiveAutoboxingKey)
         }
     }
 

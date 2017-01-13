@@ -3,7 +3,7 @@ package binaryTrees;
 /**
  * Created by WORK_x64 on 12.01.2017.
  */
-public class BSTree <T1 extends Comparable<T1>, T2> {
+public class BSTree <T1 extends Comparable<T1>, T2> { // это дерево называется бинарным деревом (сбалансированным)
     static class Node<T1, T2> {
         T1 key;
         T2 value;

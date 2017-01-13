@@ -1,7 +1,6 @@
-package objectMethods;
+package objectMethods.cloneable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by WORK_x64 on 26.12.2016.
