@@ -10,7 +10,7 @@ public class PriorityQueueProbe {
         Queue<Integer> q = new LinkedList<>(); // чтобы превратить ее в Dequeue, чтобы появились addLast()  и т.п,
         // нужно сделать LinkedList<Integer> q = new LinkedList<>();
         for (int i = 5; i > 0; i--)
-            q.offer(i);
+            q.add(i);
         System.out.print("LinkedList q: ");
         while (!q.isEmpty())
             System.out.print(q.poll() + " ");
@@ -37,7 +37,7 @@ public class PriorityQueueProbe {
             System.out.print(pq.poll() + " ");
         System.out.println();
 
-        // PriorityQueue ppq = new PriorityQueue(Collection или  Comarator)
+        // PriorityQueue ppq = new PriorityQueue(Collection или  Comparator)
         Collection<Integer> cq = new ArrayList<>();
 //        for (int i = 0; i < 5; i++)
 //            cq.add(pq.poll());
@@ -69,8 +69,9 @@ public class PriorityQueueProbe {
 //                        }
 //                    });
                     return o1.compareTo(o2);
+                    // TODO: вот это вполне работает вместо верхней записи:
+//                return (o1 % 2 == 0 && o2 % 2 != 0) ? -1 : ((o1 % 2 != 0 && o2 % 2 == 0) ? 1 : o1.compareTo(o2));
                 }
-//                return 0;
             }
         });
         evenOddQueue.addAll(cq);

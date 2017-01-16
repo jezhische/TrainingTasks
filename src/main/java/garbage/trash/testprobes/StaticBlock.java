@@ -4,11 +4,14 @@ package garbage.trash.testprobes;
  * Created by Ежище on 14.01.2017.
  */
 public class StaticBlock {
+    int c;
     StaticBlock() {
+        c = 67;
         System.out.println("first");
     }
 
     {
+        c = c*2;
         System.out.println("second");
     }
 
