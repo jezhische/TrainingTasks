@@ -1,6 +1,6 @@
 package garbage.subModifierProbe;
 
-import garbage.trash.HigherProbe;
+import garbage.trash.trashtrash.HigherProbe;
 
 /**
  * Created by Ежище on 25.11.2016.

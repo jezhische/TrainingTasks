@@ -1,4 +1,4 @@
-package garbage.trash;
+package garbage.trash.trashtrash;
 
 import garbage.subModifierProbe.LowerProbe;
 
