@@ -5,6 +5,7 @@ package objectMethods;
  */
 public class GetClassProbe {
     public static void main(String[] args) {
+        // Вывод см. в конце.
         A a = new A();
         A ab = new B();
         B b = new B();
@@ -42,6 +43,27 @@ public class GetClassProbe {
         Object obj = test;
         A aTest = (A) obj;
         aTest.print();
+
+        System.out.println(a instanceof A);
+        System.out.println(b instanceof A);
+        System.out.println(ab instanceof A);
+        System.out.println(a instanceof B);
+        System.out.println(b instanceof B);
+        System.out.println(ab instanceof B);
+        System.out.println();
+        System.out.println(A.class.isInstance(a));
+        System.out.println(A.class.isInstance(ab));
+        System.out.println(A.class.isInstance(b));
+        System.out.println();
+        System.out.println(a.getClass() == A.class);
+        System.out.println(ab.getClass() == A.class);
+        System.out.println(d.getClass() == A.class);
+        System.out.println(a.getClass() == B.class);
+        System.out.println(ab.getClass() == B.class);
+        System.out.println(b.getClass() == B.class);
+
+        // Вывод: instanceof и isInstance согласны считать объект как образцом класса, от которого он создан, так и
+        // образцом родителя. А getClass() дает точный класс, если это потомок - то никаких родителей.
 
     }
 }
