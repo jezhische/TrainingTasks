@@ -1,6 +1,7 @@
 package objectMethods.cloneable;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by WORK_x64 on 26.12.2016.
@@ -43,6 +44,14 @@ public class CloneProbes implements Cloneable {
         System.out.println(cloneProbes3.x);
 
         CloneProbes cloneProbes2 = cloneProbes1;
+
+        ArrayList<Integer> clonedList = (ArrayList<Integer>)cloneProbes1.list.clone();
+        for (int i = 0; i < clonedList.size(); i++)
+            clonedList.set(i, -1);
+        System.out.println("After cloning and changing elements value: \ncloneProbes1.list = " + (cloneProbes1.list)
+        + "\nclonedList = " + (clonedList));
+
+
     }
 }
 
