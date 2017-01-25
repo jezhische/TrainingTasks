@@ -1,5 +1,7 @@
 package string;
 
+import java.math.BigDecimal;
+
 /**
  * Created by WORK on 23.01.2017.
  */
@@ -16,6 +18,21 @@ public class StringPoolProbe {
         System.out.println("c.intern() == d.intern() " + (c.intern() == d.intern()));
         String e = d.intern();
         System.out.println("a == e " + (a == e));
+        /* дальше пробы конкатенации **/
+        String f  = "ku";
+        System.out.println("f = " + f);
+        String g = "".concat("");
+        System.out.println("g = " + g);
+        f += "ku";
+        System.out.println("f = " + f);
+        StringBuilder sbuilder = new StringBuilder();
+        sbuilder.append("ko").append(f);
+        f = sbuilder.toString();
+        System.out.println("f = " + f);
+        String i = "qwerty";
+        System.out.println(i + " " + new StringBuilder(i).reverse().toString());
+
+
 
     }
 }
