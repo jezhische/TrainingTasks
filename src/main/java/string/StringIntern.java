@@ -12,6 +12,10 @@ public class StringIntern {
         System.out.println("a.equals(b) : " + a.equals(b));
 
         System.out.println("\na.intern() == b.intern() : " + (a.intern() == b.intern()));
+        System.out.println("a == b.intern() : " + (a == b.intern()));
+        String k = b.intern();
+        System.out.println("a == (k = b.intern()) : " + (a == k));
+
 
         String d = "ddd";
         System.out.println("\na == d : " + (a == d));

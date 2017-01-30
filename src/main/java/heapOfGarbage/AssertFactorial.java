@@ -1,4 +1,4 @@
-package heap;
+package heapOfGarbage;
 
 /**
  * Created by Ежище on 22.12.2016.

@@ -1,4 +1,4 @@
-package heap.passingByValueOrReference;
+package reference.passingByValueOrReference;
 
 import java.math.BigDecimal;
 

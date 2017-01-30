@@ -1,6 +1,4 @@
-package heap.passingByValueOrReference;
-
-import sun.rmi.transport.tcp.TCPChannel;
+package reference.passingByValueOrReference;
 
 /**
  * Created by WORK_x64 on 24.01.2017.

@@ -1,4 +1,4 @@
-package heap.exception;
+package heapOfGarbage.exception;
 
 /**
  * Created by Ежище on 31.12.2016.

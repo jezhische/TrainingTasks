@@ -18,7 +18,8 @@ public class EqualsMethod {
         }
         @Override
         public boolean equals (Object object) {
-            if (object instanceof Oyuu)
+            if (object.getClass() == Oyuu.class) // выражение if (object instanceof Oyuu) может определить родителя или объект
+                // того же интерфейса как объект того же типа. getClass же даст точный вывод.
                 return x == ((Oyuu) object).x;
             return super.equals (object);
         }

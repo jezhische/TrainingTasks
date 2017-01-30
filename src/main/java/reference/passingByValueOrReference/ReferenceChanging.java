@@ -1,4 +1,4 @@
-package heap.passingByValueOrReference;
+package reference.passingByValueOrReference;
 
 /**
  * Created by WORK_x64 on 25.01.2017.

@@ -1,4 +1,4 @@
-package heap.casting;
+package heapOfGarbage.casting;
 
 /**
  * Created by WORK_x64 on 22.12.2016.
