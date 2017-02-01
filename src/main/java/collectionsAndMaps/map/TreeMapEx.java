@@ -45,10 +45,19 @@ public class TreeMapEx {
         for (Map.Entry<Boo, String> entry: third.entrySet())
             System.out.print(entry.getKey() + " " + entry.getValue() + "; ");
 
-        /* создать таблицу из сета (с записями Entry<K, V>) **/
+        /* создать сет из таблицы (здесь с записями Entry<K, V>)**/
         Set<Map.Entry<Boo, String>> set = third.entrySet();
-        Map<Boo, String> map = new TreeMap<>();
-        for
+        /* создать таблицу из сета с записями Entry<K, V> **/
+        System.out.print("\nset: ");
+        for (Map.Entry<Boo, String> entry : set)
+            System.out.printf("key = %s, value = %s; ", entry.getKey(), entry.getValue());
+        Map<Boo, String> map = new TreeMap<>(comparator1); // NB без компаратора не выйдет сравнить объекты Boo
+        for (Map.Entry<Boo, String> entry : set)
+            map.put(entry.getKey(), entry.getValue());
+        System.out.print("\nmap: ");
+        for (Map.Entry<Boo, String> entry : map.entrySet())
+            System.out.printf("key = %s, value = %s; ", entry.getKey(), entry.getValue());
+
     }
 }
 class Stick implements Comparable {

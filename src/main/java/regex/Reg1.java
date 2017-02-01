@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class Reg1 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        String s = "5 +* - /=62.3K";
+        String s = "5+* - /=62.3K";
         String[] seq = s.split(" ");
         for (String str : seq)
             System.out.print(str + "; ");
