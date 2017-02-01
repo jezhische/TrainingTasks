@@ -1,9 +1,6 @@
 package collectionsAndMaps.map;
 
-import java.util.Comparator;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Created by WORK_x64 on 11.01.2017.
@@ -15,6 +12,7 @@ public class TreeMapEx {
 
 
     public static void main(String[] args) {
+
         for (int i =10; i >= 0; i--)
         first.put(i,String.valueOf(i * 10) );
 
@@ -46,6 +44,11 @@ public class TreeMapEx {
             third.put(new Boo(i), i + "sss");
         for (Map.Entry<Boo, String> entry: third.entrySet())
             System.out.print(entry.getKey() + " " + entry.getValue() + "; ");
+
+        /* создать таблицу из сета (с записями Entry<K, V>) **/
+        Set<Map.Entry<Boo, String>> set = third.entrySet();
+        Map<Boo, String> map = new TreeMap<>();
+        for
     }
 }
 class Stick implements Comparable {
