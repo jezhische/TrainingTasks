@@ -9,67 +9,122 @@ import java.util.regex.Pattern;
  * Created by Ежище on 31.01.2017.
  */
 public class Calc3 {
+    /* хранилище индексов операндов и операторов для определения их взаимного расположения **/
+    private ArrayList<Integer> parsedDataIndex;
     /* хранилище операндов выражения **/
     private ArrayList<Double> operands;
-    /* хранилище оператора **/
-    private String statement;
+    /* хранилище оператора с учетом, что если операнд единственный, то нужно определить, слева от него находится
+    * оператор или справа; если операндов нет, то это всегда правый оператор; если операндов два, то используется
+     * всегда только левый оператор. Ну... пожалуй, пока что оставим для удобства просто "оператор" :**/
+    private String leftStatement, rightStatement, statement;
+//    int leftStatementIndex = 0, rightStatementIndex = 0; // что касается индекса оператора, то его знать уже
+//    // необязательно, поскольку уже знаем, левый это оператор или правый
+
     /* промежуточный или конечный результат вычислений **/
     private double result;
-    /* место операндов и оператора в выражении **/
-    private int startFirstOperand, startSecondOperand, startStatement;
+    /* индексы операндов и оператора в выражении **/
+//    private int startFirstOperand, startSecondOperand, statementIndex;
 
     /* необходимо, чтобы начальные значения операндов были равны 0 **/
     public Calc3() {
         operands = new ArrayList<>(2);
         for (int i = 0; i < 2; i++)
             operands.add(0d);
+        parsedDataIndex = new ArrayList<>();
     }
 
     private void scan() {
         /* сканируем введенную строчку и определяем, есть ли там какое-либо значение **/
         Scanner lineInScanner = new Scanner(System.in);
+        /* сюда записывается результат сканирования **/
         String data = null;
         if (lineInScanner.hasNextLine())
             data = lineInScanner.nextLine();
         /* если нет - выход **/
-        if (data.equals("")) {
+        if (data.equals("")) { // TODO: здесь нужно добавить ситуацию, когда сделано предыдущее действие, например,
+            // + 2, то нажатие Enter при пустой строчке приравнивается к =, т.е должна выполняться снова операция +2.
+            // Так что для выхода нужно придумать иную комбинацию.
             System.out.println("Exit");
             System.exit(0);
         }
-        /* если в просканированной строчке есть значение, создаем StringBuilder из прочитанной строчки,
-        * с ним удобнее работать **/
-        StringBuilder dataBuild = new StringBuilder(data);
-
-        /* и начинаем обрабатывать его regex-ом. Вначале поиск операндов: **/
+//        /* если в просканированной строчке есть значение, создаем StringBuilder из прочитанной строчки,
+//        * с ним удобнее работать **/
+//        StringBuilder dataBuild = new StringBuilder(data);
+        /* почистим список индексов элементов отсканированного выражения и список операндов от предыдущих значений **/
+        parsedDataIndex.clear();
+        operands.clear();
+        /* и начинаем обрабатывать выражение regex-ом. Вначале поиск операндов и определение их индекса в выражении: **/
         Pattern operandsPattern = Pattern.compile("\\d+(\\.\\d+)?"); // "цифры и (факультативно) группа из точки и цифр"
-        Matcher operandsMatcher = operandsPattern.matcher(dataBuild);
+        Matcher operandsMatcher = operandsPattern.matcher(data);
         int i = 0; // счетчик операндов
         while (operandsMatcher.find()) {
-            firstOperand = operandsMatcher.group();
-            /* записываем значение операнда, если оно есть, первым элементом хранилища операндов **/
-            operands.set(0, operandsMatcher.group());
+            parsedDataIndex.add(i, operandsMatcher.start());
+            operands.add(Double.valueOf(operandsMatcher.group()));
             i++;
-            /* затем определяем индекс первого операнда, и по индексу удаляем его из билдера **/
-            startFirstOperand = operandsMatcher.start();
-            int end = operandsMatcher.end();
-            dataBuild.delete(startFirstOperand, end);
-            System.out.println(dataBuild.toString());
         }
-        /* TODO: другой способ: определяем индекс первого операнда, если он есть, и по индексу удаляем его из билдера **/
-//        int firstOperandIndex = dataBuild.indexOf(firstOperand);
-//        System.out.println(data.indexOf(firstOperand));
-//        dataBuild.delete(firstOperandIndex, (firstOperandIndex + firstOperand.length()));
-//        System.out.println(dataBuild.toString());
-        /* ищем второй операнд **/
-        String secondOperand = null;
-        if (operandsMatcher.find()) {
-            secondOperand = operandsMatcher.group();
-            /* записываем значение операнда, если оно есть, вторым элементом хранилища операндов **/
-            operands.set(0, Double.valueOf(firstOperand));
+        /* если найдено больше двух операндов: **/
+        if (i > 2) {
+            try {
+                throw new CalcException("data input failure: too much operands");
+            } catch (CalcException e) {
+                System.out.println(e.getMessage());
+            }
         }
-        /* теперь поиск оператора **/
-        Pattern statementPattern = Pattern.compile("[+\\-*/]");
-        Matcher statementMatcher = statementPattern.matcher(dataBuild);
+
+        /* теперь поиск оператора и определение его индекса **/
+        Pattern statementPattern = Pattern.compile("[+\\-*/]"); // "один из символов + * - /"
+        Matcher statementMatcher = statementPattern.matcher(data);
+        /* если пользователь ввел несколько операторов, то учитываться будет последний из стоящих между операндами,
+         * или последний, стоящий перед единственным операндом, или последний, если есть операторы только после
+          * единственного операнда, или последний, если операндов нет. **/
+        leftStatement = null;
+        rightStatement = null;
+            /* ситуация, когда есть оба операнда: **/
+            if (i == 2) {
+                System.out.println("if (i == 2)"); //TODO
+                while (statementMatcher.find()) {
+                    int key = 0;
+                    if ((key = statementMatcher.start()) < parsedDataIndex.get(1) && key > parsedDataIndex.get(0)) // к
+                        // сожалению, здесь есть условие нерешенное: если есть оператор между двумя операндами и есть
+                        // оператор перед первым операндом, то его этот парсер не заметит; если это "-", выходит
+                        // нехорошо. Условие: первое отрицательное число выполнять через выражение с одним операндом
+                        // (например, -645, а не -645*25)
+                        leftStatement = statementMatcher.group();
+                }
+//                statement = leftStatement;
+
+                /* ситуация, когда есть только один операнд **/
+            } else if (i == 1) {
+                System.out.println("if (i == 1)"); //TODO
+                boolean statementKey = true;
+                    while (statementMatcher.find()) {
+                        /* если найден оператор слева от операнда: **/
+                        if (statementMatcher.start() < parsedDataIndex.get(0)) {
+                            leftStatement = statementMatcher.group();
+                            statementKey = false;
+                            /* если первый найденный оператор находится справа от операнда: **/
+                        } else if (statementKey)
+                            rightStatement = statementMatcher.group();
+                    }
+//                statement = statementKey? rightStatement : leftStatement;
+
+                /* ситуация, когда нет ни одного операнда **/
+            } else if (i == 0) {
+                System.out.println("if (i == 0)"); //TODO
+                while (statementMatcher.find()) {
+                    rightStatement = statementMatcher.group();
+                }
+//                statement = rightStatement;
+            }
+            /* условие ниже нужно, чтобы учесть ситуацию, когда есть два операнда и есть хотя бы один
+            * оператор, но он стоит после второго операнда, или когда оператор вовсе пропущен: **/
+        if (leftStatement == null && rightStatement == null) {
+            try {
+                throw new CalcException("data input failure: wrong statement position or there is no statement");
+            } catch (CalcException e) {
+                System.out.println(e.getMessage());
+            }
+        }
 
     }
     public double calculate() {
@@ -83,6 +138,9 @@ public class Calc3 {
 
         for (double operand: calc.operands)
             System.out.println(operand);
+//        System.out.println("statement = " + calc.statement);
+        System.out.println("rightStatement = " + calc.rightStatement);
+        System.out.println("leftStatement = " + calc.leftStatement);
         System.out.println("size = " + calc.operands.size());
     }
 
