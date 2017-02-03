@@ -7,4 +7,7 @@ public class CalcException extends Exception {
     CalcException(String message) {
         super(message);
     }
+    CalcException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
