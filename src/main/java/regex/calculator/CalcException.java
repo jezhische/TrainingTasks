@@ -1,4 +1,4 @@
-package garbage.trash.trashtrash;
+package regex.calculator;
 
 /**
  * Created by WORK_x64 on 02.02.2017.
