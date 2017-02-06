@@ -28,7 +28,8 @@ public class CallableExample {
 
         Set<Future<Integer>> set = new HashSet<Future<Integer> >();
 
-        String [] words = {"мама", "мыла", "раму"};
+//        String [] words = {"мама", "мыла", "раму"};
+        String [] words = "мама мыла раму".split(" ");
 
         for (String word: words) { // здесь вместо String words были args из main
             Callable<Integer> callable = new WordLengthCallable(word);
