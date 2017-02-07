@@ -23,7 +23,7 @@ public class BounceThread {
 }
 
 /**
- * A runnable that animates a bouncing ball.
+ * FileWriterSimply runnable that animates a bouncing ball.
  */
 class BallRunnable implements Runnable {
     /**
@@ -55,7 +55,7 @@ class BallRunnable implements Runnable {
 }
 
 /**
- * A ball that moves and bounces off the edges of a
+ * FileWriterSimply ball that moves and bounces off the edges of a
  * rectangle
  */
 class Ball {

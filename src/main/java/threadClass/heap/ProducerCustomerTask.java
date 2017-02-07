@@ -5,18 +5,21 @@ package threadClass.heap;
  */
 public class ProducerCustomerTask {
     Store store;
-    ProducerCustomerTask() {store = new Store();}
+    ProducerCustomerTask(Store store) {this.store = store;}
     Thread customer = new Thread(() -> {
+        System.out.println("customer starts");
        for (int i = 0; i < 5; i++)
            store.get();
     });
     Thread producer = new Thread(() -> {
+        System.out.println("producer starts");
         for (int i = 0; i < 5; i++)
             store.put();
     });
 
     public static void main(String[] args) {
-        ProducerCustomerTask process = new ProducerCustomerTask();
+        Store store = new Store();
+        ProducerCustomerTask process = new ProducerCustomerTask(store);
         process.producer.start();
         process.customer.start();
     }
@@ -24,29 +27,28 @@ public class ProducerCustomerTask {
 }
 class Store {
     private int product = 0;
-    synchronized void put() {
+    public synchronized void put() {
         while (product >= 3) {
             try {
                 wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            product++;
-            System.out.println("Производитель доавил 1 товар; товаров на складе " + product);
-            notify();
         }
+        product++;
+        System.out.println("Производитель добавил 1 товар; товаров на складе " + product);
+        notify();
     }
-    synchronized int get() {
+    public synchronized void get() {
         while (product < 1) {
             try {
                 wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            product--;
-            System.out.println("Покупатель купил 1 товар; на складе осталось " + product);
-            notify();
         }
-        return 1;
+        product--;
+        System.out.println("Покупатель купил 1 товар; на складе осталось " + product);
+        notify();
     }
 }

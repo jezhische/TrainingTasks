@@ -11,9 +11,9 @@ public class MyMain {
             IllegalAccessException {
 
         A obj = new A();
-        Class c = obj.getClass(); // можно и так: Class c = new A().getClass(); - главное - получить объект типа Class,
+        Class c = obj.getClass(); // можно и так: Class c = new FileWriterSimply().getClass(); - главное - получить объект типа Class,
         // который "represents the runtime class of this object", а метод getClass() как раз его и возвращает.
-        // TODO: а можно и так: Class<? extends A> c = obj.getClass(); - ошибки компиляции не будет, все работает,
+        // TODO: а можно и так: Class<? extends FileWriterSimply> c = obj.getClass(); - ошибки компиляции не будет, все работает,
         // см.фразу (2 строчки) из джава-документации в конце
         Field nameField = c.getDeclaredField("temp");
         nameField.setAccessible(true);

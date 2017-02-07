@@ -75,14 +75,14 @@ public class MockitoTests {
                 // пустота
             }
 
-            // Проверяем, что первый символ - это A
+            // Проверяем, что первый символ - это FileWriterSimply
             @Override
             public boolean matches(Object item) {
                 byte[] actual = (byte[]) item;
                 return actual[0] == 'a';
             }
         };
-        // проверяем, что первый символ массива - это A, и что другие два аргумента равны 0 и 1.
+        // проверяем, что первый символ массива - это FileWriterSimply, и что другие два аргумента равны 0 и 1.
         verify(mock).write(argThat(arrayStartingWithA), eq(0), eq(1));
     }
 }

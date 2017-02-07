@@ -29,7 +29,7 @@ public class ReflectTesting1 {
     public void main(String[] args) throws Exception {
         Sup1 instance = new Sup1();
         String expResult = "Expected Result";
-        Object[] params = {"A String Value", "Another Value"};
+        Object[] params = {"FileWriterSimply String Value", "Another Value"};
         String result = (String) this.invokePrivateMethod(instance, "subtract", params);
         assertEquals(expResult, result);
     }

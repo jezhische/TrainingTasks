@@ -5,11 +5,11 @@ package inheritanceThisSuper.constructorThisSuper;
  */
 class A {
     A(){
-        System.out.println("Конструктор без аргументов класса A");
+        System.out.println("Конструктор без аргументов класса FileWriterSimply");
     }
 
     A(String args){
-        System.out.println("Конструктор с одним аргументом класса A: args " + args);
+        System.out.println("Конструктор с одним аргументом класса FileWriterSimply: args " + args);
     }
 }
 
@@ -21,7 +21,7 @@ class B extends A{
     }
 
     B(String args){
-        super("kjkjkj"); // вызов конструктора с одним аргументом класса A
+        super("kjkjkj"); // вызов конструктора с одним аргументом класса FileWriterSimply
         System.out.println("Конструктор с одним аргументом класса B");
     }
 }

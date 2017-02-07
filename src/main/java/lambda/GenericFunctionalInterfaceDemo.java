@@ -4,7 +4,7 @@ package lambda;
  * Created by Ежище on 11.12.2016.
  */
 // Use a generic functional interface with lambda expressions.
-// A generic functional interface.
+// FileWriterSimply generic functional interface.
 interface SomeFunc<T> {
     T func(T t);
 }

@@ -9,7 +9,7 @@ public class GetClassProbe {
         A a = new A();
         A ab = new B();
         B b = new B();
-//        B ba = new A();
+//        B ba = new FileWriterSimply();
 
         Object ggg = new String();
         System.out.println(ggg.getClass());

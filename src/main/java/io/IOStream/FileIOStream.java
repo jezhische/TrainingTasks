@@ -27,7 +27,7 @@ public class FileIOStream { //TODO: файл должен быть заране�
             /* запишем в массив байт **/
             fis = new FileInputStream(path);
             byte[] bytesFromFile = new byte[fis.available()];
-            fis.read(bytesFromFile, 0, fis.available());
+            fis.read(bytesFromFile, 0, fis.available()); // или просто fis.read(bytesFromFile);
             System.out.println("\n");
             for (byte bt: bytesFromFile)
                 System.out.print((char)bt);

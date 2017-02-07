@@ -16,7 +16,7 @@ public class Win6BordersAndHTML extends JFrame {
         leftPanel.setLayout(new GridLayout(3, 2));
         JPanel rightPanel = new JPanel(new GridLayout(2, 3));
 
-        JButton a = new JButton("A");
+        JButton a = new JButton("FileWriterSimply");
         a.setBorder(createCompBorder(new EtchedBorder(EtchedBorder.RAISED, Color.BLUE, Color.CYAN)));
         a.setMinimumSize(a.getPreferredSize());
         leftPanel.add(a);

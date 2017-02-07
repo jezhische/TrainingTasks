@@ -13,7 +13,7 @@ public class Win5Alignment extends JFrame {
         hBox.setSize(500, 150);
         Box vBox = Box.createVerticalBox();
 
-        JButton a = new JButton("A");
+        JButton a = new JButton("FileWriterSimply");
         JButton s = new JButton("S");
         JButton d = new JButton("D");
         JButton f = new JButton("F");
