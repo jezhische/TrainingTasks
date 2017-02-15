@@ -1,6 +1,7 @@
 package collectionsAndMaps.sortProbes;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.TreeSet;
 
 /**
@@ -33,6 +34,7 @@ public class ComparatorCheck {
 
     public static void main(String[] args) {
         /* создание компаратора через создание новой лямбды: **/
+//        Comparator<G> ggg =(g1, g2) -> {return  0;};
         TreeSet<G> tree = new TreeSet<>((g1, g2) -> g1.a > g2.a? 1 : (g1.a == g2.a? 0 : -1)); // в развернутом виде
         // это выглядит как:
         // Comparator<G> comparion = (g1, g2) -> g1.a > g2.a? 1 : (g1.a == g2.a? 0 : -1);
