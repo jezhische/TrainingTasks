@@ -9,6 +9,8 @@ import java.util.List;
  * https://habrahabr.ru/post/260767/
  */
 public class StringString {
+    String sa;
+    {sa += "o";}
     String a = "jhhj";
     String hhh() {
         return a.concat("sss").concat(" ").concat("hjjk");

@@ -1,5 +1,6 @@
 package garbage.override;
 
+import java.awt.*;
 import java.util.NoSuchElementException;
 
 /**
@@ -11,6 +12,8 @@ public class OverrideInvestigationInheritor extends OverrideInvestigationParent 
         ghj = String.valueOf(aui);
         return (Integer) aui;
     }
+
+    Point aaa(){super.bbb(); return new Point(1, 2);} // возвращаемое значение можно сузить!
 
     public Integer fff(String ghj, double r) {
         Integer trew = new Integer(6);

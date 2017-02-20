@@ -10,4 +10,7 @@ public class OverrideInvestigationParent {
         s = "hhh";
         return (Integer) a;
     }
+
+    Object aaa() {return null;}
+    Object bbb() {return null;}
 }

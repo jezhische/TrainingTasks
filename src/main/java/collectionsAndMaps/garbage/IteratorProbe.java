@@ -15,13 +15,13 @@ public class IteratorProbe {
         }
         System.out.println(arl);
 
-        for (Integer a: arl)
+        for (Integer a : arl)
             System.out.print(a + ",");
         System.out.println("");
-        for (Iterator<Integer> iterator = arl.iterator(); iterator.hasNext();)
+        for (Iterator<Integer> iterator = arl.iterator(); iterator.hasNext(); )
             System.out.print(iterator.next() + ",");
         System.out.println("");
-        for (ListIterator<Integer> iterator = arl.listIterator(); iterator.hasNext();)
+        for (ListIterator<Integer> iterator = arl.listIterator(); iterator.hasNext(); )
             System.out.print(iterator.next() + ",");
         System.out.println("");
 
@@ -35,11 +35,22 @@ public class IteratorProbe {
         System.out.println(arl.get(5));
 
         LinkedList link = new LinkedList();
-        link.getFirst();
+//        link.getFirst();
 
         HashSet<Object> hash = new HashSet<>();
 
-        LinkedHashSet<Object> lhash = new LinkedHashSet<>();
+
+        link.addFirst(1);
+        arl.add(2, 2);
+
+        List a = (List) link.clone();
+
+        LinkedHashSet<Integer> lhash = new LinkedHashSet<>();
+        for (int t = 0; t < 4; t++)
+            lhash.add(t);
+        lhash.add(2);
+        lhash.add(0);
+        lhash.forEach(r -> System.out.print(r + ", "));
 
 
     }

@@ -4,6 +4,9 @@ package threadClass.heap;
  * Created by WORK on 16.11.2016.
  */
 public class JoinExample implements Runnable {
+    /* Одна нить (поток) может вызвать метод join() у другой нити. В результате первый поток (который вызвал метод)
+    приостанавливает свою работу и ждет окончания работы второго потока (у объекта которого был вызван метод join()).
+     http://javastudy.ru/interview/concurrent/**/
 
      static int a = 0;
     @Override

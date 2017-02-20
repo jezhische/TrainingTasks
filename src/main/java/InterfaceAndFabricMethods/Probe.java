@@ -1,7 +1,5 @@
 package InterfaceAndFabricMethods;
 
-import static InterfaceAndFabricMethods.Inter.plus;
-
 /**
  * Created by WORK on 16.09.2016.
  */
@@ -40,6 +38,6 @@ public class Probe implements InterInher {
         System.out.println(iint.minus(56, 46));
         Probe probe = new Probe();
         System.out.println(probe.minus(684987987, 25));
-        System.out.println(plus(8, 9));
+//        System.out.println(plus(8, 9));
     }
 }
