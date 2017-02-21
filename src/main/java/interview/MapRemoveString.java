@@ -9,6 +9,7 @@ import java.util.function.Predicate;
  * Created by Ежище on 20.02.2017.
  */
 public class MapRemoveString {
+    /* см. также package collectionAndMaps.map **/
     public static void main(String[] args) {
         Map<String, String> map = new HashMap<>();
         System.out.println((int) 'a');
