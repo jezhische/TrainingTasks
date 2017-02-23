@@ -13,6 +13,7 @@ public class MapRemoveStringOneMore {
     /* см. также package interview **/
     public static void main(String[] args) {
 
+        /* добываем текст из файла: **/
         StringBuilder buildText = new StringBuilder();
         try(FileReader reader = new FileReader("src\\main\\java\\collectionsAndMaps\\map\\" +
                 "MapRemoveStringOneMoreSupply")) {
@@ -24,32 +25,20 @@ public class MapRemoveStringOneMore {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-        /* простой способ порезать текст на слова: **/
+        /* простой способ порезать текст на слова и набить ими массив: **/
         String[] text = buildText.toString().split("\\W+");
+
+        /* проверим:**/
+        System.out.println(buildText.toString());
+        System.out.println(Arrays.toString(text));
+
+        /* Не слишком получившийся способ: **/
 //        StringTokenizer st = new StringTokenizer(buildText.toString());
 //        ArrayList<String> text2 = new ArrayList<>();
 //        while(st.hasMoreElements())
 //            text2.add(st.nextToken(" "));
-        NavigableMap<String, Integer> map = new TreeMap<>();
-        for (int i = 0; i < text.length; i++)
-            map.put(text[i], i);
-        Map.Entry<String, Integer> en = map.lastEntry();
-        System.out.println(map.get("specify"));
-        System.out.println(en.getKey() + en.getValue());
-        Set<Map.Entry<String, Integer>> entrySet = map.entrySet();
-        for (Map.Entry<String, Integer> entry : entrySet)
-            System.out.print(entry.getKey() + "_" + entry.getValue() + "; ");
 
-//        for (Iterator<Map.Entry<String, Integer>> iterator = entrySet.iterator();iterator.hasNext();)
-//            iterator.next();
-//            System.out.print(m.getKey() + "_" + m.getValue() + "; ");
-        System.out.println();
-        Iterator<Map.Entry<String, Integer>> iterator = entrySet.iterator();
-//        map.remove("specify");
-        System.out.println(iterator.next());
-
-
-//        /* более сложный способ: **/
+        //        /* более сложный способ: fixme - нужно взять коллекцию вместо массива: **/
 //        Pattern pattern = Pattern.compile("\\w+");
 //        Matcher matcher = pattern.matcher(buildText.toString());
 ////        String textAnotherWay[] = null;
@@ -58,30 +47,37 @@ public class MapRemoveStringOneMore {
 ////            textAnotherWay = new String[count];
 ////        for (int i = 0; i < count; i++)
 ////            textAnotherWay[i] = matcher.group();
-//
-//
-//
-//
 //        NavigableMap<String, Integer> map = new TreeMap<>();
 //        int i = 0;
 //        while(matcher.find()) {
 //            map.put(matcher.group(), i);
 //            i++;
 //        }
-////        String textAnotherWay[] = new String[i];
-//        if (map.size() != 0) {
-//            for (Iterator<Map.Entry<String, Integer>> iterator = map.entrySet().iterator(); iterator.hasNext();)
-//                System.out.print(iterator.next().getKey() + ":" + iterator.next().getValue() + "; ");
-//        }
 
-        System.out.println(buildText.toString());
-        System.out.println(Arrays.toString(text));
+        /* создаем таблицу и используем массив стрингов как ее ключи: **/
+        NavigableMap<String, Integer> map = new TreeMap<>();
+        for (int i = 0; i < text.length; i++)
+            map.put(text[i], i);
+        /* поперебираем, распечатаем: **/
+        Map.Entry<String, Integer> en = map.lastEntry();
+        System.out.println(map.get("specify"));
+        System.out.println(en.getKey() + en.getValue());
+        Set<Map.Entry<String, Integer>> entrySet = map.entrySet();
+        /* перебор значений через цикл foreach - но здесь нельзя удалять значения: **/
+        for (Map.Entry<String, Integer> entry : entrySet)
+            System.out.print(entry.getKey() + "_" + entry.getValue() + "; ");
 
-//        System.out.println(text2);
-//        System.out.println(map.size());
-//        System.out.println(Arrays.toString(textAnotherWay));
-//        System.out.println(count);
-
+        /* так можно распечатать только целиком entry, или только ключи, или только значения. При попытке взять ключ,
+         * а затем еще и значение, итератор за одну итерацию цикла будет совершать 2 собственных итерации, и
+          * в конце перебора выскочит за границы, определенные hasNext**/
+        for (Iterator<Map.Entry<String, Integer>> iterator = entrySet.iterator();iterator.hasNext();)
+            System.out.print(iterator.next() + "; ");
+        System.out.println();
+        Iterator<Map.Entry<String, Integer>> iterator = entrySet.iterator();
+        /* если я удалю элемент при созданном итераторе, а потом обращусь к итератору,
+        * получу ConcurrentModificationException: **/
+//        map.remove("specify");
+        System.out.println(iterator.next());
 
     }
 }
