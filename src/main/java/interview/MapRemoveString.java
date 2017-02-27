@@ -38,7 +38,7 @@ public class MapRemoveString {
         map.forEach((k, v) -> System.out.print(k + "," + v + "; "));
 
 
-        // вот как эта запись выглядит, если использовать метод removeIf(Predicate<? super E> filter)
+        // TODO: вот как эта запись выглядит, если использовать метод removeIf(Predicate<? super E> filter)
         // из интерфейса Collection<E>  (откуда в Map берется Collection: метод entrySet() возвращает
         // Set<Map.Entry<K, V>>, а этот Set, в свою очередь, имплементирует интерфейс Collection<E>:
         map.entrySet().removeIf(s -> s.getKey().contains("a"));
