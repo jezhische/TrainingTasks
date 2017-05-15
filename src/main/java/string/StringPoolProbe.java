@@ -10,6 +10,7 @@ public class StringPoolProbe {
         String a = "a", b = "a";
         String c = new String("a");
         String d = new String("a");
+        System.out.println(a.equals(b) + " " + a.equals(c) + " " + c.equals(d) );
         System.out.println("a == b " + (a == b));
         System.out.println("a == c " + (a == c));
         System.out.println("c == d " + (c == d));
