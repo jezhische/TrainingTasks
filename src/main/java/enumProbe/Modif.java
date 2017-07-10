@@ -27,6 +27,7 @@ public enum Modif {
 
     public static void main(String[] args) {
         System.out.println(PUBLIC.getName());
+        System.out.println(Modif.valueOf(Modif.class, "PUBLIC"));
 
     }
 }

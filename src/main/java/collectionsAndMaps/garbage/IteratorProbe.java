@@ -35,7 +35,7 @@ public class IteratorProbe {
         System.out.println(arl.get(5));
 
         LinkedList link = new LinkedList();
-//        link.getFirst();
+//        link.txt.getFirst();
 
         HashSet<Object> hash = new HashSet<>();
 
