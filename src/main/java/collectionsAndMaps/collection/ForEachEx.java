@@ -52,5 +52,13 @@ public class ForEachEx {
             System.out.print(iterator.next() + "___");
 //        System.out.println();
 //        arSet.forEach(System.out::print);
+
+        System.out.println("\n\n");
+        ArrayList<String> arList = new ArrayList<>();
+        as.forEach(arList :: add);
+        arList.forEach(System.out:: print);
+        System.out.println();
+        as.forEach(string -> arList.add(string));
+        arList.forEach(string -> System.out.print(string));
     }
 }
