@@ -18,7 +18,7 @@ public class FileIOStream {
 
         try(FileInputStream input = new FileInputStream(fileName);
             FileOutputStream output = new FileOutputStream(fileName)) {
-            listToReading.spliterator()
+//            listToReading.spliterator()
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
