@@ -1,4 +1,4 @@
-package io.IOStream.ioNewProbes;
+package io.IOStream.newProbes;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
