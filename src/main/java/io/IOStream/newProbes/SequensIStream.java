@@ -28,16 +28,16 @@ public class SequensIStream {
             vector = new Vector<>();
             fileNameList = new ArrayList<>(Arrays.asList(fileNames));
             vector.add(new StringBufferInputStream(String.format("Files record started at %s\n",
-                    new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z").format(new Date()))));
+                    new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z").format(new Date()))));
             for (int i = 0; i < fileNameList.size(); i++) {
                 vector.add(new StringBufferInputStream( String.format("\nBegin of file %d at %s%s",
-                        i, new SimpleDateFormat("HH:mm:ss z").format(new Date()), "\n ")));
+                        i + 1, new SimpleDateFormat("HH:mm:ss z").format(new Date()), "\n ")));
                 vector.add(new FileInputStream(fileNameList.get(i)));
                 vector.add(new StringBufferInputStream( String.format("\nEnd of file %d at %s%s",
-                        i, new SimpleDateFormat("HH:mm:ss z").format(new Date()), "\n ")));
+                        i + 1, new SimpleDateFormat("HH:mm:ss z").format(new Date()), "\n ")));
             }
             vector.add(new StringBufferInputStream(String.format("\nFiles record finished at %s\n",
-                    new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z").format(new Date()))));
+                    new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z").format(new Date()))));
 
             Enumeration<InputStream> enumer = vector.elements();
 
@@ -51,6 +51,13 @@ public class SequensIStream {
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
+        } finally {
+            try {
+                output.close();
+                sequence.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
