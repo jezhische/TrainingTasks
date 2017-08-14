@@ -9,10 +9,28 @@ public class Test {
         Parent parent = new Parent();
         System.out.println("\nParent(String name):::");
         Parent parentStringed = new Parent("namename");
+
         System.out.println("\nChild1(int a):::");
         Child1 child1 = new Child1(5);
+        Parent p = (Parent) new Child1(8); // восходящее приведение не нужно, Child и так является Parent-ом. И методы
+        // и поля, принадлежащие только чайлду (которых нет у парента) здесь будут недоступны
+        // Т.е. вот так работать не будет:
+//        p.print();
+        // А вот так - будет:
+        ((Child1)p).print();
+
+        Parent par = new Parent("nock");
+//        ((Child1)par).print(); // несмотря на то, что приведение не запрещается компилятором, при выполнении выскочит
+        // ClassCastException
+
+
         System.out.println("\nChild1(String name):::");
         Child1 child1Stringed = new Child1("nmnm");
+//        Child1 c = (Child1) new Parent(); // так нельзя
+//        Child1 c = (Child1) new Parent("aharai"); // ClassCastException... Parent cannot be cast to...Child1
+//        Parent c = (Child1) new Parent(); // Так тоже нельзя
+//        Parent c = (Child1) new Parent("aharai"); // и так нельзя
+
         System.out.println("\nGrandchild1(int a):::");
         Grandchild1 grandchild1 = new Grandchild1(10);
         System.out.println("\nGrandchild1(String name):::");

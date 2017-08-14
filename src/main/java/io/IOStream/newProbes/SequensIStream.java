@@ -36,8 +36,8 @@ public class SequensIStream {
                 vector.add(new StringBufferInputStream( String.format("\nEnd of file %d at %s%s",
                         i + 1, new SimpleDateFormat("HH:mm:ss z").format(new Date()), "\n ")));
             }
-            vector.add(new StringBufferInputStream(String.format("\nFiles record finished at %s\n",
-                    new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z").format(new Date()))));
+            vector.add(new ByteArrayInputStream((String.format("\nFiles record finished at %s\n",
+                    new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z").format(new Date()))).getBytes()));
 
             Enumeration<InputStream> enumer = vector.elements();
 
