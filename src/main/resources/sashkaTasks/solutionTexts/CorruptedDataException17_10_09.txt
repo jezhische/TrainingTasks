@@ -1,0 +1,13 @@
+package trainingTest.javarush;
+
+import java.io.IOException;
+
+/**
+ * Created by ≈жище on 15.11.2016.
+ */
+public class CorruptedDataException17_10_09 extends IOException {
+    CorruptedDataException17_10_09(String message) {
+        super(message);
+    }
+
+}
