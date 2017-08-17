@@ -75,8 +75,8 @@ class Main {
         ForTest newTest = io.readObject(filename);
         System.out.println(test.ret(5) + ", " + newTest.ret(5));
         System.out.println(test.equals(newTest));
-        System.out.println((Object) test.equals((Object) newTest)); // благодаря отложенному выполнению, java определит
-        // класс этого объекта как ForTest
+        System.out.println((Object) test.equals((Object) newTest)); // благодаря отложенному выполнению (позднее
+        // связывание, late binding), java определит класс этого объекта как ForTest
         System.out.println((Object) test.equals(newTest)); // и даже так
         System.out.println(newTest.getClass());
         System.out.println((Object) newTest.getClass()); // в обоих случаях определяется Test, а не Object
