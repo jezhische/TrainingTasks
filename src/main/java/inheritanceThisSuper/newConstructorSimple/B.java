@@ -1,4 +1,4 @@
-package inheritanceThisSuper.constructorSimple;
+package inheritanceThisSuper.newConstructorSimple;
 
 public class B extends A {
     // default конструктора нет, поэтому создание конструктора со ссылкой super обязательно

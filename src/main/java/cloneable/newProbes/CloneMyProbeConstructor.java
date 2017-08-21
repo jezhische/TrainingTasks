@@ -1,23 +1,36 @@
 package cloneable.newProbes;
 
-import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
-import org.springframework.beans.factory.annotation.Qualifier;
-import static java.lang.Math.random;
-
 import java.util.*;
-import java.util.function.Supplier;
 
-public class CloneMyProbe implements Cloneable {
+public class CloneMyProbeConstructor {
+
     private int initial;
-    private Comparator<RandPoint> comparator = Comparator.comparing(RandPoint::getId);
+    private Comparator<RandPoint> idComparator = ((thisRandPoint, thatRandPoint) ->
+            thisRandPoint.getId() < thatRandPoint.getId()? -1 : thisRandPoint.getId() > thatRandPoint.getId()? 1 : 0);
+    private Comparator<RandPoint> comparator = idComparator./*thenComparing((randPoint, string)
+            -> this.getName().compareTo(randPoint.getName()));*/ thenComparing(Comparator.comparing(RandPoint::getName));
+
     private Queue<RandPoint> prQueue;
     private String name;
 
-    public CloneMyProbe(int initial, String name) {
+    public CloneMyProbeConstructor(int initial, String name) {
         this.initial = initial;
         this.name = name;
         prQueue = populateAndGetQueue();
     }
+
+    public CloneMyProbeConstructor(int initial, Comparator<RandPoint> comparator, Queue<RandPoint> prQueue, String name) {
+        this.initial = initial;
+        this.comparator = comparator;
+        this.prQueue = prQueue;
+        this.name = name;
+    }
+
+    // конструктор клонирования:
+    public CloneMyProbeConstructor(CloneMyProbeConstructor that) {
+        this(that.getInitial(),that.getComparator(), that.getPrQueue(), that.getName());
+    }
+
     public Queue<RandPoint> populateAndGetQueue() {
         Queue<RandPoint> orderedQueue = new PriorityQueue<>(initial, comparator);
         for (int i = 0; i < initial; i++) {
@@ -31,7 +44,7 @@ public class CloneMyProbe implements Cloneable {
 //        return super.clone();
 //    }
 
-        @Override
+    @Override
     protected CloneMyProbe clone() throws CloneNotSupportedException {
         CloneMyProbe other = (CloneMyProbe) super.clone();
         other.setComparator(this.getComparator());
@@ -49,11 +62,10 @@ public class CloneMyProbe implements Cloneable {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("prQueue: ");
         getPrQueue().forEach((randomPoint) -> stringBuilder.append("id: " + randomPoint.getId() +
                 ", name: " + randomPoint.getName() + "; "));
         return this.getName() + ": initial - " + this.getInitial() + ", comparator - " + this.getComparator() +
-                ", prQueue - " + stringBuilder.toString();
+                ", prQueue - " + this.getPrQueue() + ": " + stringBuilder;
     }
 
     public int getInitial() {
@@ -88,71 +100,13 @@ public class CloneMyProbe implements Cloneable {
         this.name = name;
     }
 
-    public static RandPoint RPInstance(int id) {
-        return RandPoint.getRP(id);
-    }
-}
-class RandPoint {
-    private int id;
-    private String name;
+    public static void main(String[] args) {
 
-    private RandPoint(int id) {
-        this.id = id;
-        name = ((Supplier<String>) () -> {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = -1; ++i < 3;) {
-                stringBuilder.append((char) (random() * 120));
-            }
-            return stringBuilder.toString();
-        }).get();
-    }
-
-    static RandPoint getRP(int init) {
-        return new RandPoint(init);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-}
-
-
-class DoIt {
-    public static void main(String[] args) throws CloneNotSupportedException {
-        int initial = 5;
-        CloneMyProbe original = new CloneMyProbe(initial, "Original");
-//        Queue<RandPoint> naturalOrderQueue = original.populateAndGetQueue();
-//        naturalOrderQueue.forEach(rp -> System.out.println(rp.getId()));
-        CloneMyProbe clone = (CloneMyProbe) original.clone();
-        System.out.println(original.toString());
-        System.out.println(clone.toString());
-        System.out.println();
-//        clone.getPrQueue().add(RandPoint.getRP(1));
-        Iterator iter = clone.getPrQueue().iterator();
-        for (int i = 0; iter.hasNext(); i++) {
-            ((RandPoint)iter.next()).setName("CABBALLO");;
-        }
-        clone.setName("Clone");
+        CloneMyProbeConstructor original = new CloneMyProbeConstructor(5, "Original");
+        CloneMyProbeConstructor clone = new CloneMyProbeConstructor(original);
+        clone.getPrQueue().peek().setName("HARAMBA!");
         System.out.println(original);
         System.out.println(clone);
-
-        System.out.println();
-        clone.getPrQueue().peek().setName("HARRAMBA!");
-        System.out.println(original);
-        System.out.println(clone);
-
 
     }
 }

@@ -1,4 +1,4 @@
-package inheritanceThisSuper.constructorSimple;
+package inheritanceThisSuper.newConstructorSimple;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -42,5 +42,24 @@ public class Main {
 //        B bb = (B) aa; // Так, соответственно, тоже нельзя.
         System.out.println("Instance of pure type A: " + aa.toString());
 //        ((B)aa).print(); // компилятор пропустит, но в runtime выскочит ошибка.
+
+//        B b = (B) new A(25); // ClassCastException
+        B b = (B) a;
+
+        //------------------------------------------------------------------------------
+        // upcasting:
+        A ad = new B(); // переменной типа В формально указывается тип А, поэтому только в данном случае
+        // возможен downcasting:
+        B bd = (B) ad;
+
+        // upcasting:
+        Object s = "upcasting String to Object";
+        // downcasting:
+//        String ss = new Object(); // incompatible types
+
+        int i = 1321346576;
+        // downcasting
+        short sh = (short)i;
+        System.out.println(sh);
     }
 }

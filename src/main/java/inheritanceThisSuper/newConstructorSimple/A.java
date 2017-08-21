@@ -1,4 +1,4 @@
-package inheritanceThisSuper.constructorSimple;
+package inheritanceThisSuper.newConstructorSimple;
 
 public class A {
     private int i;
