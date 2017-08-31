@@ -56,10 +56,33 @@ public class Main {
         Object s = "upcasting String to Object";
         // downcasting:
 //        String ss = new Object(); // incompatible types
+//        s.contains(); // уже нельзя
+        ((String)s).contains("dodo");
 
         int i = 1321346576;
         // downcasting
         short sh = (short)i;
         System.out.println(sh);
+
+        bd.test1();
+        aa.test1();
+        ((A)bd).test1(); // todo: идет обращение к STATIC методу именно класса A!!!!
+//        ((B)aa).test1(); // ClassCastException
+        bd.test3();
+        ((A)bd).test3(); //todo: а вот если метод не static, то обращение идет к методу ЭКЗЕМПЛЯРА, т.е. к инстансу класса B
+
+        System.out.println("\n");
+        // еще раз:
+        A aaa = new A(2);
+        A aab = new B();
+        B bbb = new B();
+
+        aaa.test1(); // работает A
+        aab.test1(); // работает A!!!!, потому что тип объекта A
+        bbb.test1(); // работает B
+        ((B)aab).test1(); // работает B - здесь мы поменяли указанный тип на фактический!!!
+
+
+
     }
 }

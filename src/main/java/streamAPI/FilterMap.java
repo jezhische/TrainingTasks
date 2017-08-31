@@ -16,7 +16,10 @@ public class FilterMap {
                 new Sample("Hooda", 6), new Sample("Hoertryo", 7));
 
         HashMap<String, Integer> beforeMap = // NB: метод toMap возвращает Map, а не HashMap!
-                new HashMap<>(sampleStream.collect(Collectors.toMap(s -> s.getKey(), Sample::getValue)));
+                // либо используем ссылку на метод класса:
+                new HashMap<>(sampleStream.collect(Collectors.toMap(Sample::getKey, Sample::getValue)));
+        // либо обращаемся к объекту и добываем из него значение с помощью соотв. метода:
+//        Collectors.toMap(s -> s.getKey(), s -> s.getValue())
         // toMap(Function<? super T,? extends K> keyMapper, Function<? super T,? extends U> valueMapper)
         // Function принимает T, возвращает K; и принимает T, возвращает U
 

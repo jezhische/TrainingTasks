@@ -15,6 +15,28 @@ public class B extends A {
         super(i);
     }
 
+    //    @Override // todo: Статический метод не переопределяется!!!!
+    static void test1() { // todo: Если static в классе A, то должен быть static и в классе B, иначе это расценивается
+        // как попытка переопределения/ Здесь модификатор static означает, что мы всего лишь ПРЯЧЕМ метод класса-родителя,
+        // todo: это СОКРЫТИЕ МЕТОДОВ (hiding methods), см.:
+        // http://info.javarush.ru/translation/2014/04/15/10-%D0%B7%D0%B0%D0%BC%D0%B5%D1%82%D0%BE%D0%BA-%D0%BE-
+        // %D0%BC%D0%BE%D0%B4%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%82%D0%BE%D1%80%D0%B5-Static-%D0%B2-Java.html
+// todo: это потому, что определение типа, откуда берется static метод, происходит НЕ в runtime (late binding), а при
+// СОЗДАНИИ КЛАССА компилятором ("статические методы связываются [получают связь с типом] во время компиляции, в отличие
+// от связывания виртуальных или не статических методов, которые связываются во время исполнения на реальном объекте")
+        System.out.println("B.test1");
+    }
+
+    static void test2() {
+//        super.test2(); // todo: из СТАТИЧЕСКОГО контекста НЕЛЬЗЯ обратиться к ИНСТАНСУ суперкласса
+    }
+
+    @Override
+    void test3() {
+        System.out.println("B.test3");
+    }
+
+
     @Override
     public String toString() {
         return super.toString() + ". Here: B.toString() is worked.";
