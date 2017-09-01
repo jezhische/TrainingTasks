@@ -9,12 +9,13 @@ public class AndAndBoolean {
         return true;
     }
     private static boolean compare(int a, int b) {
-        return a < b;
+        return a > b;
     }
 
     public static void main(String[] args) {
 //        boolean c = compare(5, 8) && secondAnd("happened?");
         System.out.println(compare(5, 8) && secondAnd("happened?"));
+        System.out.println();
         System.out.println(compare(5, 8) || secondAnd("happened?"));
         System.out.println(compare(8, 5) || secondAnd("happened?"));
     }
