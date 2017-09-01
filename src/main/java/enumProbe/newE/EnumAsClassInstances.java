@@ -17,10 +17,10 @@ public class EnumAsClassInstances {
         },
         ASIDE(" "){};
 
-        // метод:
+        // метод enum Direction:
         public /*abstract*/ Direction opposite(){return null;};
 
-        //конструкторы:
+        //конструкторы enum Direction:
         Direction() {}
         Direction(String s) {}
     }
@@ -42,14 +42,14 @@ public class EnumAsClassInstances {
 //        ,
 //        ASIDE{}; // вынужден переопределять абстрактный метод
 
-        // конструкторы:
+        // конструкторы enum AbstractDirection:
         AbstractDirection() {}
         AbstractDirection(String s) {}
-        // абстрактный метод:
+        // абстрактный метод enum AbstractDirection:
         public abstract AbstractDirection opposite();
     }
 
-    //конструкторы:
+    //конструкторы класса EnumAsClassInstances:
     public EnumAsClassInstances() {}
     public EnumAsClassInstances(int i) {}
 
