@@ -1,6 +1,4 @@
-package innerOuterClasses.newOK;
-
-import java.util.function.Function;
+package innerOuterClasses.newIOK;
 
 public class StaticClassProbe {
 

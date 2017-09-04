@@ -68,8 +68,14 @@ public class Main {
         aa.test1();
         ((A)bd).test1(); // todo: идет обращение к STATIC методу именно класса A!!!!
 //        ((B)aa).test1(); // ClassCastException
-        bd.test3();
-        ((A)bd).test3(); //todo: а вот если метод не static, то обращение идет к методу ЭКЗЕМПЛЯРА, т.е. к инстансу класса B
+
+        try {
+            bd.test3();
+            ((A)bd).test3(); //todo: а вот если метод не static, то обращение идет к методу ЭКЗЕМПЛЯРА, т.е. к
+            // инстансу класса B
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
 
         System.out.println("\n");
         // еще раз:
