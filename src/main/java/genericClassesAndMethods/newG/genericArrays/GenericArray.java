@@ -1,11 +1,7 @@
-package genericClassesAndMethods.genericArrays;
-
-import garbage.constructor.A;
+package genericClassesAndMethods.newG.genericArrays;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by WORK_x64 on 29.12.2016.

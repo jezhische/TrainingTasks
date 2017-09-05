@@ -16,6 +16,15 @@ public class ListIter {
         System.out.println();
 
         listIter = link.listIterator();
+
+        System.out.println();
+        // todo: NB: listIterator(link.size()) (иначе начнет с index = 0 и ничего не выведет)
+        for (ListIterator<Integer> it = link.listIterator(link.size()); it.hasPrevious();) {
+            System.out.print(it.previous() + "; ");
+        }
+        System.out.println();
+
+
         while(listIter.hasNext()) {
             Integer i = listIter.next();
             if (i == 1)

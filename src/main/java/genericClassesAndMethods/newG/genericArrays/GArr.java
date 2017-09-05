@@ -1,4 +1,4 @@
-package genericClassesAndMethods.genericArrays;
+package genericClassesAndMethods.newG.genericArrays;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
