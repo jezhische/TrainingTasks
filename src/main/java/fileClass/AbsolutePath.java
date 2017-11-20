@@ -12,5 +12,6 @@ public class AbsolutePath {
         System.out.println(file.lastModified());
         System.out.println("isDirectory = " + file.isDirectory());
 //        file.renameTo(new File("src\\main\\resources\\testSupport\\Probe5.txt")); //работает, файл переносится
+        new File("src\\main\\resources\\Probe5.txt").delete();
     }
 }
