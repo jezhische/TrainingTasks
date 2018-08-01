@@ -19,7 +19,7 @@ public class CallableExample {
             this.word = word;
         }
         public Integer call() {
-            return Integer.valueOf(word.length());
+            return word.length();
         }
     }
 

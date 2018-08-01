@@ -1,4 +1,4 @@
-package streamRedirect;
+package io.streamRedirect;
 
 import java.io.File;
 import java.io.FileNotFoundException;

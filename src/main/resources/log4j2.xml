@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--status="debug" выводит внутренние (при работе log4j) логи в консоль ВНЕ ЗАВИСИМОСТИ от root level-->
+<Configuration status="debug" name="MyLogConfig">
+    <Properties>
+        <!--skipJansi у меня не работает для 2.10.0, а для более низких версий подключен по умолчанию:-->
+        <Property name="log4j.skipJansi">false</Property>
+        <!--Далее: util.logging.log4j2.fromApacheTutorial.logs - Reference с указанием пэкиджей не годится, нужен Path-->
+        <Property name="log_path">src/main/java/util/logging/log4j2/fromApacheTutorial/logs</Property>
+    </Properties>
+    <Filters>
+<!--  Здесь могут быть фильтры, относящиеся к уровню конфигурации, до того, сообщение попало в LogConfig -->
+    </Filters>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%highlight{%style{%d [%t] %-5level %logger: %msg%n%throwable}{BG_Yellow}}{FATAL=black, ERROR=red, WARN=blue, INFO=black, DEBUG=green, TRACE=blue}"/>
+        </Console>
+        <!--"%style{ %-24d}{BG_Cyan}%style{ [%t] }{blue}%highlight{%style{  %-7level}{BG_Green}}{FATAL=magenta, ERROR=red, WARN=blue, INFO=black, DEBUG=green, TRACE=blue}%style{  %-50logger{36}}{dim, red, BG_Yellow}%style{  %-200msg}{bright, blue, BG_White} %red{%throwable}%n"/>-->
+        <!--"%r ::: %d{YYYY.MM.dd HH:mm:ss.SSS} [%t: %T: %tp: %X{name, number}] %-5level %logger{36} : file %F : method %M - %msg%n%throwable{short.lineNumber}"/>-->
+        <!--"%highlight{%d [%t] %-5level %style{%logger}{bright,cyan}: %msg%n%throwable}{FATAL=white, ERROR=red, WARN=blue, INFO=black, DEBUG=green, TRACE=blue}"/>-->
+
+        <!--  .............................................................................................................. -->
+
+        <!--  Ф А Й Л О В Ы Е  А П П Е Н Д Е Р Ы: -->
+
+        <!--fileName="...logBar.log" нужен как буфер. Последние логи могут так в нем и остаться, и переписываются в
+        соответствующий файл (который может тут же и создаваться по условию OnStartupTriggeringPolicy minSize="1")
+        только при следующем запуске приложения (т.е. происходит flush, опорожнение буфера)-->
+        <RollingFile name="BarRollingFile" fileName="${log_path}/logBar.log"
+                     filePattern="${log_path}/logBarLog/logBar_$${date:yyyy-MM-dd}/%d{HH-mm}/logBar-%d{yyyy-MM-dd_HH-mm}-%i.log">
+<!--выражение ${date:yyyy-MM-dd} является lookup, который "inserts external values into the log4j2 configuration"
+(в данном случае - current date), а предшествующий $ - это "escape character, to insert the lookup expression
+into the filePattern attribute"-->
+            <!--еще пример lookup - заголовок будет выведен перед первой записью логгера (только в файле)-->
+<!-- todo: пока что убрал этот заголовок, чтобы не плодить пустые файлы с любого созданного логгера:-->
+            <!--<PatternLayout header="${java:version} - ${java:os}\n">-->
+                <!--<Pattern>%d [%t] %-5level %logger: %msg%n%throwable</Pattern>-->
+            <!--</PatternLayout>-->
+<!--маркер-фильтры нуждаются в добавлении маркеров к сообщениям, отсылаемым логгерами, в джава-коде - см. Bar.java и MyApp.java-->
+            <!--Чтобы несколько фильтров работали в связке, нужно создать композитный фильтр - тег <Filters>. Если
+            фильтр только один, этот тег не нужен:-->
+            <Filters>
+        <!--Если я добавлю этот ThresholdFilter, то тогда в output пойдет все подряд:-->
+                <!--<ThresholdFilter level="TRACE" onMatch="ACCEPT" onMismatch="DENY"/>-->
+                <MarkerFilter marker="PBAR" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
+                <MarkerFilter marker="ChBAR" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+
+            <Policies>
+                <!--Triggers a rollover on every restart, but only if the file size is greater than zero-->
+                <OnStartupTriggeringPolicy minSize="1"/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="1 KB"/>
+            </Policies>
+            <!--Не более 2 файлов будет в подпапке с именем %d{hh-mm}, если больше, то новый будет записываться
+            с индексом 2, 2-й переписываться с индексом 1, а 1-ый уничтожаться - файлы дописываются в конец,
+            в отличие от того, что написано в доках, и работают как стек, FIFO-->
+            <DefaultRolloverStrategy max="2" />
+        </RollingFile>
+<!--  .............................................................................................................. -->
+
+        <!--Еще один аппендер с фильтром, который будет записывать в файл внутренние дебажные сообщения log4j из
+        специального логгера, который будет получать информацию из System.out-->
+        <!--<RollingFile name="Log4jDebugRollingFile" fileName="${log_path}/log4jlog.log"-->
+                     <!--filePattern="${log_path}/log4jLog/log4jlog_$${date:yyyy-MM-dd}/%d{HH-mm}/logBar-%d{yyyy-MM-dd_HH-mm}-%i.log">-->
+            <!--<PatternLayout header="LOG4J DEBUG MESSAGES: ${java:version} - ${java:os}\n">-->
+                <!--<Pattern>%d [%t] %-5level %logger: %msg%n%throwable</Pattern>-->
+            <!--</PatternLayout>-->
+            <!--<Filters>-->
+                <!--&lt;!&ndash;<ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>&ndash;&gt;-->
+                <!--<RegexFilter regex=".* main DEBUG .*" onMatch="ACCEPT" onMismatch="DENY"/>-->
+            <!--</Filters>-->
+
+            <!--<Policies>-->
+                <!--<OnStartupTriggeringPolicy minSize="1"/>-->
+                <!--<TimeBasedTriggeringPolicy interval="1" modulate="true"/>-->
+                <!--<SizeBasedTriggeringPolicy size="1 KB"/>-->
+            <!--</Policies>-->
+            <!--<DefaultRolloverStrategy max="2" />-->
+        <!--</RollingFile>-->
+    </Appenders>
+
+    <Loggers>
+        <Logger name="util.logging.log4j2.fromApacheTutorial.Bar" level="trace" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="BarRollingFile"/>
+            <Filters>
+                <!--  Здесь могут быть фильтры, относящиеся к уровню LogConfig, до того, как сообщение попало в аппендер -->
+            </Filters>
+        </Logger>
+        <!--Это будет его ребенок, и поскольку у него additivity="true" по умолчанию, то аппендеров ему не добавляем -
+        он будет пересылать свои сообщения родителю, который будет ими распоряжаться, и дальше пропускать родитель их
+        уже не будет, поскольку у родителя additivity="false"-->
+        <Logger name="util.logging.log4j2.fromApacheTutorial.Bar.child" level="error">
+            <!--NB: запись типа <Logger.../> не работает, нужно <Logger...></Logger>-->
+        </Logger>
+
+        <!--<logger name="log4j2consoleDebugger" level="debug">-->
+            <!--<AppenderRef ref="Log4jDebugRollingFile"/>-->
+        <!--</logger>-->
+
+        <Root level="error">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
